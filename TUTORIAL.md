@@ -1,3 +1,11 @@
+Useful links
+------------
+
+- http://docs.oracle.com/javase/7/docs/api/
+- http://docs.guava-libraries.googlecode.com/git-history/release/javadoc/index.html
+- http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/ (in particular chapter 4)
+
+
 Example 1
 ------------
 modules/dcache/src/main/java/org/dcache/hello/HelloWorld.java
