@@ -12,7 +12,7 @@ modules/dcache/src/main/java/org/dcache/hello/HelloWorld.java
 
 package org.dcache.hello;
 
-````java
+```java
 import dmg.cells.nucleus.CellAdapter;
 
 public class HelloWorld extends CellAdapter
@@ -49,7 +49,7 @@ Example 3
 
 modules/dcache/src/main/resources/org/dcache/hello/hello.xml
 
-````xml
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -83,7 +83,7 @@ Example 4
 
 modules/dcache/src/main/java/org/dcache/hello/HelloWorld.java
 
-````java
+```java
 package org.dcache.hello;
 
 import java.util.concurrent.Callable;
@@ -135,10 +135,10 @@ public class HelloWorld
 
 modules/dcache/src/main/resources/org/dcache/hello/hello.xml
 
-````xml
-<bean id="hello" class="org.dcache.hello.HelloWorld">
-    <description>Says hello</description>
-</bean>
+```xml
+    <bean id="hello" class="org.dcache.hello.HelloWorld">
+        <description>Says hello</description>
+    </bean>
 ```
 
 
@@ -147,7 +147,7 @@ Example 5
 
 HelloWorld.java
 
-````java
+```java
 package org.dcache.hello;
 
 import java.util.concurrent.Callable;
@@ -212,7 +212,7 @@ public class HelloWorld
 
 hello.xml
 
-````xml
+```xml
     <bean id="hello" class="org.dcache.hello.HelloWorld">
         <description>Says hello</description>
         <property name="defaultFormal" value="${isDefaultFormal}"/>
@@ -244,42 +244,42 @@ Example 6
 
 HelloWorld.java
 
-````java
-@Command(name = "pools", hint = "show pools in pool group",
-        usage = "Shows the names of the pools in POOLGROUP.")
-class PoolsCommands implements Callable<ArrayList<String>>
-{
-    @Argument(help = "A pool group")
-    String poolGroup;
-
-    @Override
-    public ArrayList<String> call() throws CacheException, InterruptedException
+```java
+    @Command(name = "pools", hint = "show pools in pool group",
+            usage = "Shows the names of the pools in POOLGROUP.")
+    class PoolsCommands implements Callable<ArrayList<String>>
     {
-        PoolManagerGetPoolsByPoolGroupMessage request = new PoolManagerGetPoolsByPoolGroupMessage(poolGroup);
-        PoolManagerGetPoolsByPoolGroupMessage reply = poolManager.sendAndWait(request);
-        ArrayList<String> names = new ArrayList<>();
-        for (PoolManagerPoolInformation pool : reply.getPools()) {
-            names.add(pool.getName());
+        @Argument(help = "A pool group")
+        String poolGroup;
+
+        @Override
+        public ArrayList<String> call() throws CacheException, InterruptedException
+        {
+            PoolManagerGetPoolsByPoolGroupMessage request = new PoolManagerGetPoolsByPoolGroupMessage(poolGroup);
+            PoolManagerGetPoolsByPoolGroupMessage reply = poolManager.sendAndWait(request);
+            ArrayList<String> names = new ArrayList<>();
+            for (PoolManagerPoolInformation pool : reply.getPools()) {
+                names.add(pool.getName());
+            }
+            return names;
         }
-        return names;
     }
-}
 
-public CellStub getPoolManager()
-{
-    return poolManager;
-}
+    public CellStub getPoolManager()
+    {
+        return poolManager;
+    }
 
-@Required
-public void setPoolManager(CellStub poolManager)
-{
-    this.poolManager = poolManager;
-}
+    @Required
+    public void setPoolManager(CellStub poolManager)
+    {
+        this.poolManager = poolManager;
+    }
 ```
 
 hello.xml
 
-````xml
+```xml
     <bean id="hello" class="org.dcache.hello.HelloWorld">
         <description>Says hello</description>
         <property name="defaultFormal" value="${isDefaultFormal}"/>
@@ -304,47 +304,47 @@ Example 7
 
 hello.xml
 
-````xml
-<bean id="pnfs-handler" class="diskCacheV111.util.PnfsHandler">
-    <constructor-arg>
-        <bean class="org.dcache.cells.CellStub">
-            <property name="destination" value="PnfsManager"/>
-            <property name="timeout" value="30000"/>
-        </bean>
-    </constructor-arg>
-</bean>
+```xml
+    <bean id="pnfs-handler" class="diskCacheV111.util.PnfsHandler">
+        <constructor-arg>
+            <bean class="org.dcache.cells.CellStub">
+                <property name="destination" value="PnfsManager"/>
+                <property name="timeout" value="30000"/>
+            </bean>
+        </constructor-arg>
+    </bean>
 
-<bean id="hello" class="org.dcache.hello.HelloWorld">
-    <description>Says hello</description>
-    <property name="defaultFormal" value="${isDefaultFormal}"/>
-    <property name="poolManager" ref="pool-manager-stub"/>
-    <property name="pnfsHandler" ref="pnfs-handler"/>
-</bean>
+    <bean id="hello" class="org.dcache.hello.HelloWorld">
+        <description>Says hello</description>
+        <property name="defaultFormal" value="${isDefaultFormal}"/>
+        <property name="poolManager" ref="pool-manager-stub"/>
+        <property name="pnfsHandler" ref="pnfs-handler"/>
+    </bean>
 ```
 
 HelloWorld.java
 
-````java
-@Required
-public void setPnfsHandler(PnfsHandler pnfs)
-{
-    this.pnfs = pnfs;
-}
-
-@Command(name = "mkdir", hint = "create directory",
-        usage = "Create a new directory")
-class MkdirCommand implements Callable<String>
-{
-    @Argument(help = "Directory name")
-    String name;
-
-    @Override
-    public String call() throws CacheException
+```java
+    @Required
+    public void setPnfsHandler(PnfsHandler pnfs)
     {
-        pnfs.createPnfsDirectory(name);
-        return "";
+        this.pnfs = pnfs;
     }
-}
+
+    @Command(name = "mkdir", hint = "create directory",
+            usage = "Create a new directory")
+    class MkdirCommand implements Callable<String>
+    {
+        @Argument(help = "Directory name")
+        String name;
+
+        @Override
+        public String call() throws CacheException
+        {
+            pnfs.createPnfsDirectory(name);
+            return "";
+        }
+    }
 ```
 
 Example 8
@@ -352,48 +352,48 @@ Example 8
 
 HelloWorld.java
 
-````java
-@Command(name = "hi", hint = "prints greeting", usage = "Prints a greeting for NAME.")
-class HelloCommand implements Callable<String>
-{
-    @Argument(index = 0, help = "Your name")
-    String name;
-
-    @Argument(index = 1, help = "Name of a hello cell")
-    String cell;
-
-    @Override
-    public String call() throws CacheException, InterruptedException
+```java
+    @Command(name = "hi", hint = "prints greeting", usage = "Prints a greeting for NAME.")
+    class HelloCommand implements Callable<String>
     {
-        return helloStub.sendAndWait(new CellPath(cell), new HelloMessage(name)).getGreeting();
+        @Argument(index = 0, help = "Your name")
+        String name;
+
+        @Argument(index = 1, help = "Name of a hello cell")
+        String cell;
+
+        @Override
+        public String call() throws CacheException, InterruptedException
+        {
+            return helloStub.sendAndWait(new CellPath(cell), new HelloMessage(name)).getGreeting();
+        }
     }
-}
 
-@Required
-public void setHelloStub(CellStub helloStub)
-{
-    this.helloStub = helloStub;
-}
+    @Required
+    public void setHelloStub(CellStub helloStub)
+    {
+        this.helloStub = helloStub;
+    }
 
-public HelloMessage messageArrived(HelloMessage message)
-{
-    String name = message.getName();
-    message.setGreeting(isDefaultFormal ? "Hello, " + name : "Hi there, " + name);
-    return message;
-}
+    public HelloMessage messageArrived(HelloMessage message)
+    {
+        String name = message.getName();
+        message.setGreeting(isDefaultFormal ? "Hello, " + name : "Hi there, " + name);
+        return message;
+    }
 ```
 
 hello.xml
 
-````xml
-<bean id="hello-stub" class="org.dcache.cells.CellStub">
-    <property name="timeout" value="10000"/>
-</bean>
+```xml
+    <bean id="hello-stub" class="org.dcache.cells.CellStub">
+        <property name="timeout" value="10000"/>
+    </bean>
 ```
 
 HelloMessage.java
 
-````java
+```java
 package org.dcache.hello;
 
 import diskCacheV111.vehicles.Message;
@@ -430,7 +430,7 @@ Example 9
 
 HelloWorld.java
 
-````java
+```java
     @Command(name = "hi", hint = "prints greeting", usage = "Prints a greeting for NAME.")
     class HelloCommand extends DelayedReply implements Callable<Reply>, Runnable
     {
@@ -487,7 +487,7 @@ Example 11
     
 HelloWorld.java
 
-````java
+```java
     @Command(name = "hi", hint = "prints greeting", usage = "Prints a greeting for NAME.")
     class HelloCommand extends DelayedReply implements Callable<Reply>
     {
@@ -525,7 +525,7 @@ Example 12
 
 HelloWorld.java
 
-````java
+```java
     @Required
     public void setListDirectoryHandler(ListDirectoryHandler lister)
     {
@@ -599,7 +599,7 @@ HelloWorld.java
 
 hello.xml
 
-````xml
+```xml
     <bean id="list-handler" class="org.dcache.util.list.ListDirectoryHandler">
         <constructor-arg ref="pnfs-handler"/>
     </bean>
@@ -614,7 +614,7 @@ pool.batch
 
 HelloProtocolInfo.java
 
-````java
+```java
     public class HelloProtocolInfo implements IpProtocolInfo
     {
         private final InetSocketAddress address;
@@ -700,7 +700,7 @@ HelloMover.java
 
 HelloWorld.java
 
-````java
+```java
     @Override
     public void run()
     {
