@@ -10,17 +10,19 @@ Example 1
 ------------
 modules/dcache/src/main/java/org/dcache/hello/HelloWorld.java
 
-    package org.dcache.hello;
-    
-    import dmg.cells.nucleus.CellAdapter;
-    
-    public class HelloWorld extends CellAdapter
+package org.dcache.hello;
+
+````java
+import dmg.cells.nucleus.CellAdapter;
+
+public class HelloWorld extends CellAdapter
+{
+    public HelloWorld(String cellName, String args)
     {
-        public HelloWorld(String cellName, String args)
-        {
-            super(cellName, args);
-        }
+        super(cellName, args);
     }
+}
+```
 
 
 skel/share/services/hello.batch
@@ -47,22 +49,24 @@ Example 3
 
 modules/dcache/src/main/resources/org/dcache/hello/hello.xml
 
-    <?xml version="1.0" encoding="UTF-8"?>
-    <beans xmlns="http://www.springframework.org/schema/beans"
-           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xmlns:context="http://www.springframework.org/schema/context"
-           xsi:schemaLocation="http://www.springframework.org/schema/beans
-               http://www.springframework.org/schema/beans/spring-beans.xsd
-               http://www.springframework.org/schema/context
-               http://www.springframework.org/schema/context/spring-context.xsd">
-    
-        <context:annotation-config/>
-    
-        <bean id="properties" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-            <description>Imported configuration data</description>
-            <property name="location" value="arguments:"/>
-        </bean>
-    </beans>
+````xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:annotation-config/>
+
+    <bean id="properties" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <description>Imported configuration data</description>
+        <property name="location" value="arguments:"/>
+    </bean>
+</beans>
+```
 
 skel/share/services/hello.batch
 
@@ -79,59 +83,63 @@ Example 4
 
 modules/dcache/src/main/java/org/dcache/hello/HelloWorld.java
 
-    package org.dcache.hello;
-    
-    import java.util.concurrent.Callable;
-    
-    import dmg.util.Args;
-    import dmg.util.command.Argument;
-    import dmg.util.command.Command;
-    import dmg.util.command.Option;
-    
-    import org.dcache.cells.CellCommandListener;
-    
-    public class HelloWorld
-        implements CellCommandListener
+````java
+package org.dcache.hello;
+
+import java.util.concurrent.Callable;
+
+import dmg.util.Args;
+import dmg.util.command.Argument;
+import dmg.util.command.Command;
+import dmg.util.command.Option;
+
+import org.dcache.cells.CellCommandListener;
+
+public class HelloWorld
+    implements CellCommandListener
+{
+    public static final String hh_hello = "[-formal] <name> # prints greeting";
+    public static final String fh_hello = "Prints a greeting for NAME. Outputs a formal greeting if -formal is given.";
+    public String ac_hello_$_1(Args args)
     {
-        public static final String hh_hello = "[-formal] <name> # prints greeting";
-        public static final String fh_hello = "Prints a greeting for NAME. Outputs a formal greeting if -formal is given.";
-        public String ac_hello_$_1(Args args)
+        String name = args.argv(0);
+        boolean isFormal = args.getOption("formal") != null;
+        if (isFormal) {
+            return "Hello, " + name;
+        } else {
+            return "Hi there, " + name;
+        }
+    }
+
+    @Command(name = "hi", hint = "prints greeting", usage = "Prints a greeting for NAME.")
+    class HelloCommand implements Callable<String>
+    {
+        @Argument(help = "Your name")
+        String name;
+
+        @Option(name="formal", usage = "Output a formal greeting")
+        boolean isFormal;
+
+        @Override
+        public String call()
         {
-            String name = args.argv(0);
-            boolean isFormal = args.getOption("formal") != null;
             if (isFormal) {
                 return "Hello, " + name;
             } else {
                 return "Hi there, " + name;
             }
         }
-    
-        @Command(name = "hi", hint = "prints greeting", usage = "Prints a greeting for NAME.")
-        class HelloCommand implements Callable<String>
-        {
-            @Argument(help = "Your name")
-            String name;
-    
-            @Option(name="formal", usage = "Output a formal greeting")
-            boolean isFormal;
-    
-            @Override
-            public String call()
-            {
-                if (isFormal) {
-                    return "Hello, " + name;
-                } else {
-                    return "Hi there, " + name;
-                }
-            }
-        }
     }
+}
+```
 
 modules/dcache/src/main/resources/org/dcache/hello/hello.xml
 
-    <bean id="hello" class="org.dcache.hello.HelloWorld">
-        <description>Says hello</description>
-    </bean>
+````xml
+<bean id="hello" class="org.dcache.hello.HelloWorld">
+    <description>Says hello</description>
+</bean>
+```
 
 
 Example 5
@@ -139,73 +147,77 @@ Example 5
 
 HelloWorld.java
 
-    package org.dcache.hello;
-    
-    import java.util.concurrent.Callable;
-    
-    import dmg.util.Args;
-    import dmg.util.command.Argument;
-    import dmg.util.command.Command;
-    import dmg.util.command.Option;
-    
-    import org.dcache.cells.CellCommandListener;
-    
-    public class HelloWorld
-        implements CellCommandListener
+````java
+package org.dcache.hello;
+
+import java.util.concurrent.Callable;
+
+import dmg.util.Args;
+import dmg.util.command.Argument;
+import dmg.util.command.Command;
+import dmg.util.command.Option;
+
+import org.dcache.cells.CellCommandListener;
+
+public class HelloWorld
+    implements CellCommandListener
+{
+    private boolean isDefaultFormal;
+
+    public boolean isDefaultFormal()
     {
-        private boolean isDefaultFormal;
-    
-        public boolean isDefaultFormal()
-        {
-            return isDefaultFormal;
+        return isDefaultFormal;
+    }
+
+    public void setDefaultFormal(boolean defaultFormal)
+    {
+        isDefaultFormal = defaultFormal;
+    }
+
+    public static final String hh_hello = "[-formal] <name> # prints greeting";
+    public static final String fh_hello = "Prints a greeting for NAME. Outputs a formal greeting if -formal is given.";
+    public String ac_hello_$_1(Args args)
+    {
+        String name = args.argv(0);
+        String formal = args.getOption("formal");
+        boolean isFormal = (formal != null) ? formal.equals("") || Boolean.parseBoolean(formal) : isDefaultFormal;
+        if (isFormal) {
+            return "Hello, " + name;
+        } else {
+            return "Hi there, " + name;
         }
-    
-        public void setDefaultFormal(boolean defaultFormal)
+    }
+
+    @Command(name = "hi", hint = "prints greeting", usage = "Prints a greeting for NAME.")
+    class HelloCommand implements Callable<String>
+    {
+        @Argument(help = "Your name")
+        String name;
+
+        @Option(name="formal", usage = "Output a formal greeting")
+        boolean isFormal = isDefaultFormal;
+
+        @Override
+        public String call()
         {
-            isDefaultFormal = defaultFormal;
-        }
-    
-        public static final String hh_hello = "[-formal] <name> # prints greeting";
-        public static final String fh_hello = "Prints a greeting for NAME. Outputs a formal greeting if -formal is given.";
-        public String ac_hello_$_1(Args args)
-        {
-            String name = args.argv(0);
-            String formal = args.getOption("formal");
-            boolean isFormal = (formal != null) ? formal.equals("") || Boolean.parseBoolean(formal) : isDefaultFormal;
             if (isFormal) {
                 return "Hello, " + name;
             } else {
                 return "Hi there, " + name;
             }
         }
-    
-        @Command(name = "hi", hint = "prints greeting", usage = "Prints a greeting for NAME.")
-        class HelloCommand implements Callable<String>
-        {
-            @Argument(help = "Your name")
-            String name;
-
-            @Option(name="formal", usage = "Output a formal greeting")
-            boolean isFormal = isDefaultFormal;
-
-            @Override
-            public String call()
-            {
-                if (isFormal) {
-                    return "Hello, " + name;
-                } else {
-                    return "Hi there, " + name;
-                }
-            }
-        }
     }
+}
+```
 
 hello.xml
 
+````xml
     <bean id="hello" class="org.dcache.hello.HelloWorld">
         <description>Says hello</description>
         <property name="defaultFormal" value="${isDefaultFormal}"/>
     </bean>
+```
 
 hello.batch
 
@@ -232,44 +244,48 @@ Example 6
 
 HelloWorld.java
 
-    @Command(name = "pools", hint = "show pools in pool group",
-            usage = "Shows the names of the pools in POOLGROUP.")
-    class PoolsCommands implements Callable<ArrayList<String>>
+````java
+@Command(name = "pools", hint = "show pools in pool group",
+        usage = "Shows the names of the pools in POOLGROUP.")
+class PoolsCommands implements Callable<ArrayList<String>>
+{
+    @Argument(help = "A pool group")
+    String poolGroup;
+
+    @Override
+    public ArrayList<String> call() throws CacheException, InterruptedException
     {
-        @Argument(help = "A pool group")
-        String poolGroup;
-    
-        @Override
-        public ArrayList<String> call() throws CacheException, InterruptedException
-        {
-            PoolManagerGetPoolsByPoolGroupMessage request = new PoolManagerGetPoolsByPoolGroupMessage(poolGroup);
-            PoolManagerGetPoolsByPoolGroupMessage reply = poolManager.sendAndWait(request);
-            ArrayList<String> names = new ArrayList<>();
-            for (PoolManagerPoolInformation pool : reply.getPools()) {
-                names.add(pool.getName());
-            }
-            return names;
+        PoolManagerGetPoolsByPoolGroupMessage request = new PoolManagerGetPoolsByPoolGroupMessage(poolGroup);
+        PoolManagerGetPoolsByPoolGroupMessage reply = poolManager.sendAndWait(request);
+        ArrayList<String> names = new ArrayList<>();
+        for (PoolManagerPoolInformation pool : reply.getPools()) {
+            names.add(pool.getName());
         }
+        return names;
     }
-    
-    public CellStub getPoolManager()
-    {
-        return poolManager;
-    }
-    
-    @Required
-    public void setPoolManager(CellStub poolManager)
-    {
-        this.poolManager = poolManager;
-    }
+}
+
+public CellStub getPoolManager()
+{
+    return poolManager;
+}
+
+@Required
+public void setPoolManager(CellStub poolManager)
+{
+    this.poolManager = poolManager;
+}
+```
 
 hello.xml
 
+````xml
     <bean id="hello" class="org.dcache.hello.HelloWorld">
         <description>Says hello</description>
         <property name="defaultFormal" value="${isDefaultFormal}"/>
         <property name="poolManager" ref="pool-manager-stub"/>
     </bean>
+```
 
 hello.batch
 
@@ -288,125 +304,133 @@ Example 7
 
 hello.xml
 
-    <bean id="pnfs-handler" class="diskCacheV111.util.PnfsHandler">
-        <constructor-arg>
-            <bean class="org.dcache.cells.CellStub">
-                <property name="destination" value="PnfsManager"/>
-                <property name="timeout" value="30000"/>
-            </bean>
-        </constructor-arg>
-    </bean>
-    
-    <bean id="hello" class="org.dcache.hello.HelloWorld">
-        <description>Says hello</description>
-        <property name="defaultFormal" value="${isDefaultFormal}"/>
-        <property name="poolManager" ref="pool-manager-stub"/>
-        <property name="pnfsHandler" ref="pnfs-handler"/>
-    </bean>
+````xml
+<bean id="pnfs-handler" class="diskCacheV111.util.PnfsHandler">
+    <constructor-arg>
+        <bean class="org.dcache.cells.CellStub">
+            <property name="destination" value="PnfsManager"/>
+            <property name="timeout" value="30000"/>
+        </bean>
+    </constructor-arg>
+</bean>
+
+<bean id="hello" class="org.dcache.hello.HelloWorld">
+    <description>Says hello</description>
+    <property name="defaultFormal" value="${isDefaultFormal}"/>
+    <property name="poolManager" ref="pool-manager-stub"/>
+    <property name="pnfsHandler" ref="pnfs-handler"/>
+</bean>
+```
 
 HelloWorld.java
 
-    @Required
-    public void setPnfsHandler(PnfsHandler pnfs)
-    {
-        this.pnfs = pnfs;
-    }
-    
-    @Command(name = "mkdir", hint = "create directory",
-            usage = "Create a new directory")
-    class MkdirCommand implements Callable<String>
-    {
-        @Argument(help = "Directory name")
-        String name;
-    
-        @Override
-        public String call() throws CacheException
-        {
-            pnfs.createPnfsDirectory(name);
-            return "";
-        }
-    }
+````java
+@Required
+public void setPnfsHandler(PnfsHandler pnfs)
+{
+    this.pnfs = pnfs;
+}
 
+@Command(name = "mkdir", hint = "create directory",
+        usage = "Create a new directory")
+class MkdirCommand implements Callable<String>
+{
+    @Argument(help = "Directory name")
+    String name;
+
+    @Override
+    public String call() throws CacheException
+    {
+        pnfs.createPnfsDirectory(name);
+        return "";
+    }
+}
+```
 
 Example 8
 ------------
 
 HelloWorld.java
 
-    @Command(name = "hi", hint = "prints greeting", usage = "Prints a greeting for NAME.")
-    class HelloCommand implements Callable<String>
-    {
-        @Argument(index = 0, help = "Your name")
-        String name;
-    
-        @Argument(index = 1, help = "Name of a hello cell")
-        String cell;
-    
-        @Override
-        public String call() throws CacheException, InterruptedException
-        {
-            return helloStub.sendAndWait(new CellPath(cell), new HelloMessage(name)).getGreeting();
-        }
-    }
+````java
+@Command(name = "hi", hint = "prints greeting", usage = "Prints a greeting for NAME.")
+class HelloCommand implements Callable<String>
+{
+    @Argument(index = 0, help = "Your name")
+    String name;
 
-    @Required
-    public void setHelloStub(CellStub helloStub)
-    {
-        this.helloStub = helloStub;
-    }
+    @Argument(index = 1, help = "Name of a hello cell")
+    String cell;
 
-    public HelloMessage messageArrived(HelloMessage message)
+    @Override
+    public String call() throws CacheException, InterruptedException
     {
-        String name = message.getName();
-        message.setGreeting(isDefaultFormal ? "Hello, " + name : "Hi there, " + name);
-        return message;
+        return helloStub.sendAndWait(new CellPath(cell), new HelloMessage(name)).getGreeting();
     }
+}
 
+@Required
+public void setHelloStub(CellStub helloStub)
+{
+    this.helloStub = helloStub;
+}
+
+public HelloMessage messageArrived(HelloMessage message)
+{
+    String name = message.getName();
+    message.setGreeting(isDefaultFormal ? "Hello, " + name : "Hi there, " + name);
+    return message;
+}
+```
 
 hello.xml
 
-    <bean id="hello-stub" class="org.dcache.cells.CellStub">
-        <property name="timeout" value="10000"/>
-    </bean>
+````xml
+<bean id="hello-stub" class="org.dcache.cells.CellStub">
+    <property name="timeout" value="10000"/>
+</bean>
+```
 
 HelloMessage.java
 
-    package org.dcache.hello;
+````java
+package org.dcache.hello;
 
-    import diskCacheV111.vehicles.Message;
+import diskCacheV111.vehicles.Message;
 
-    public class HelloMessage extends Message
+public class HelloMessage extends Message
+{
+    private final String name;
+    private String greeting;
+
+    public HelloMessage(String name)
     {
-        private final String name;
-        private String greeting;
+        this.name = name;
+    }
 
-        public HelloMessage(String name)
-        {
-            this.name = name;
-        }
+    public String getName()
+    {
+        return name;
+    }
 
-        public String getName()
-        {
-            return name;
-        }
+    public String getGreeting()
+    {
+        return greeting;
+    }
 
-        public String getGreeting()
-        {
-            return greeting;
-        }
-
-        public void setGreeting(String greeting)
-        {
-            this.greeting = greeting;
-        }
-    }    
-
+    public void setGreeting(String greeting)
+    {
+        this.greeting = greeting;
+    }
+}    
+```
 
 Example 9
 ------------
 
 HelloWorld.java
 
+````java
     @Command(name = "hi", hint = "prints greeting", usage = "Prints a greeting for NAME.")
     class HelloCommand extends DelayedReply implements Callable<Reply>, Runnable
     {
@@ -433,12 +457,14 @@ HelloWorld.java
              }
         }
     }
+```
 
 Example 10
 -------------
 
 HelloWorld.java
 
+```java
     @Command(name = "hi", hint = "prints greeting", usage = "Prints a greeting for NAME.")
     class HelloCommand extends DelayedCommand<String>
     {
@@ -454,12 +480,14 @@ HelloWorld.java
             return helloStub.sendAndWait(new CellPath(cell), new HelloMessage(name)).getGreeting();
         }
     }
+```
 
 Example 11
 ------------
     
 HelloWorld.java
 
+````java
     @Command(name = "hi", hint = "prints greeting", usage = "Prints a greeting for NAME.")
     class HelloCommand extends DelayedReply implements Callable<Reply>
     {
@@ -490,12 +518,14 @@ HelloWorld.java
             return this;
         }
     }
+```
 
 Example 12
 ------------
 
 HelloWorld.java
 
+````java
     @Required
     public void setListDirectoryHandler(ListDirectoryHandler lister)
     {
@@ -565,12 +595,15 @@ HelloWorld.java
             writer.println(entry.getName());
         }
     }
+```
 
 hello.xml
 
+````xml
     <bean id="list-handler" class="org.dcache.util.list.ListDirectoryHandler">
         <constructor-arg ref="pnfs-handler"/>
     </bean>
+```
 
 Example 13
 -------------
@@ -581,6 +614,7 @@ pool.batch
 
 HelloProtocolInfo.java
 
+````java
     public class HelloProtocolInfo implements IpProtocolInfo
     {
         private final InetSocketAddress address;
@@ -620,9 +654,11 @@ HelloProtocolInfo.java
             return address;
         }
     }
+```
 
 HelloMover.java
 
+```java
     public class HelloMover implements MoverProtocol
     {
         private MoverChannel<HelloProtocolInfo> channel;
@@ -660,9 +696,11 @@ HelloMover.java
             return channel.getLastTransferred();
         }
     }
+```
 
 HelloWorld.java
 
+````java
     @Override
     public void run()
     {
@@ -701,4 +739,4 @@ HelloWorld.java
             }
         }
     }
-
+```
