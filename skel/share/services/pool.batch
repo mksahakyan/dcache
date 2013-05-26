@@ -54,6 +54,7 @@ define context PoolDefaults endDefine
    movermap define DCap-3  org.dcache.pool.movers.DCapProtocol_3_nio
    movermap define GFtp-1  org.dcache.pool.movers.GFtpProtocol_2_nio
    movermap define GFtp-2  org.dcache.pool.movers.GFtpProtocol_2_nio
+   movermap define hello-1 org.dcache.hello.HelloMover
 endDefine
 
 create org.dcache.cells.UniversalSpringCell "${cell.name}" \
