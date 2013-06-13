@@ -10,9 +10,9 @@ Example 1
 ------------
 modules/dcache/src/main/java/org/dcache/hello/HelloWorld.java
 
+```java
 package org.dcache.hello;
 
-```java
 import dmg.cells.nucleus.CellAdapter;
 
 public class HelloWorld extends CellAdapter
