@@ -1,9 +1,12 @@
 package diskCacheV111.poolManager;
 
 import java.net.UnknownHostException;
+import java.util.concurrent.Callable;
 
 import dmg.cells.nucleus.CellCommandListener;
 import dmg.util.CommandSyntaxException;
+import dmg.util.command.Argument;
+import dmg.util.command.Command;
 import org.dcache.util.Args;
 
 /**
@@ -381,6 +384,7 @@ public class PoolSelectionUnitCommands implements CellCommandListener {
         return "";
     }
 
+
     public final static String hh_psu_set_pool =
                     "<pool glob> enabled|disabled|ping|noping|rdonly|notrdonly";
 
@@ -394,12 +398,35 @@ public class PoolSelectionUnitCommands implements CellCommandListener {
         return psuAccess.setRegex(args.argv(0));
     }
 
-    public final static String hh_psu_unlink = "<link> <pool>|<pool group>";
+    @Command(name =  "psu unlink",
+             hint = "Deletes the specified link name form the pool/poolgroup." +
+                     "delete the spacified pool/group from the link. ")
+    public class PsuSetPoolCommand implements Callable<String>
+    {
+        @Argument(index = 0,
+                  usage = "The name of the link e.g. regular-read-link or regular-write-link." +
+                          "To create a new link please use \"psu create link\" command. ")
+        String link;
+
+        @Argument(index = 1,
+                  valueSpec = "POOL|POOL GROUP",
+                  usage = "The name of the pool and the pool group respectively.")
+        String poolOrGpool;
+
+        @Override
+        public String call()
+        {
+            psuAccess.unlink(link, poolOrGpool);
+            return "";
+        }
+
+    }
+   /* public final static String hh_psu_unlink = "<link> <pool>|<pool group>";
 
     public String ac_psu_unlink_$_2(Args args) {
         psuAccess.unlink(args.argv(0), args.argv(1));
         return "";
-    }
+    }*/
 
     /*
      * ***************************** PSUX **********************************
