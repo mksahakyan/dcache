@@ -392,29 +392,53 @@ public class PoolSelectionUnitCommands implements CellCommandListener {
         return psuAccess.setPool(args.argv(0), args.argv(1));
     }
 
-    public final static String hh_psu_set_regex = "on | off";
+
+
+    @Command(name = "psu set regex",
+             hint = "turns the regex on or off",
+             description = "Used to resolve the unit from the unit name.")
+    public class PsuSetRegexCommand implements Callable<String>
+    {
+        @Argument(valueSpec = "ON|OFF",
+                  usage = "")
+        String _useRegex;
+
+        @Override
+        public String call() throws IllegalArgumentException
+        {
+            return psuAccess.setRegex(_useRegex);
+        }
+    }
+    /*public final static String hh_psu_set_regex = "on | off";
 
     public String ac_psu_set_regex_$_1(Args args) {
         return psuAccess.setRegex(args.argv(0));
-    }
+    }*/
 
-    @Command(name =  "psu unlink",
-             hint = "Deletes the specified link name form the pool/poolgroup." +
-                     "delete the spacified pool/group from the link. ")
+    @Command(name = "psu unlink",
+             hint = "Removes the specified link form the list of links mapped to the specified pool or " +
+                     "pool group (pools grouped together). Deletes as well the specified pool/pool group " +
+                     "from the list of pools mapped to the given link. If the specified link  or pool/pool group" +
+                     " names do not exist returns \"Not found\" exception. If the given link name is not associated " +
+                     "with the given pool/ pool group returns exception that the \"given pool is not a member of the " +
+                     "specified link\"")
     public class PsuSetPoolCommand implements Callable<String>
     {
         @Argument(index = 0,
                   usage = "The name of the link e.g. regular-read-link or regular-write-link." +
+                          "The link is a set of rules describing which pools are permitted for which type of " +
+                          "transfer-request," +
+                          "Each link links a set of transfer-requests to a pool or group of pools" +
                           "To create a new link please use \"psu create link\" command. ")
         String link;
 
         @Argument(index = 1,
                   valueSpec = "POOL|POOL GROUP",
-                  usage = "The name of the pool and the pool group respectively.")
+                  usage = "The name of the pool or pool group associated to the specified link.")
         String poolOrGpool;
 
         @Override
-        public String call()
+        public String call() throws IllegalArgumentException
         {
             psuAccess.unlink(link, poolOrGpool);
             return "";
