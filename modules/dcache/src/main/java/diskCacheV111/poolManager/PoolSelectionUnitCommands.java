@@ -385,22 +385,60 @@ public class PoolSelectionUnitCommands implements CellCommandListener {
     }
 
 
-    public final static String hh_psu_set_pool =
+
+
+    @Command(name = "psu set pool",
+             hint = "update the mode of the pool ",
+             description = "Changes the mode of the pools whos name match the given pattern (regular expression )." +
+                     "Returns a the number of pools updated.")
+    public class PsuSetPoolCommand implements Callable<String>
+    {
+
+        @Argument(index = 1,
+                  valueSpec = "enabled|disabled|ping|noping|rdonly|notrdonly",
+                  usage = "The new mode to be set.")
+        String mode;
+
+        @Argument(index = 0, metaVar = "pool glob", usage = "The patern")
+        String poolgloob;
+
+
+        @Override
+        public String call() throws IllegalArgumentException
+        {
+            return psuAccess.setPool(poolgloob, mode);
+        }
+    }
+
+    /*public final static String hh_psu_set_pool =
                     "<pool glob> enabled|disabled|ping|noping|rdonly|notrdonly";
 
     public String ac_psu_set_pool_$_2(Args args) {
         return psuAccess.setPool(args.argv(0), args.argv(1));
-    }
+    }*/
 
 
 
     @Command(name = "psu set regex",
              hint = "turns the regex on or off",
-             description = "Used to resolve the unit from the unit name.")
+             description ="This command is used to switch between different mode of checking whether" +
+                     "there is an matching storage unit found for a given Storage Unit NAME;" +
+                     "see psu create unit for more details." +
+                     "The NAME for store units has the form <StorageClass>@<type-of-storage-system>."+
+                     "Both <StorageClass> and <type-of-storage-system> may be replaced with a '*' (\"*@\"*) to"+
+                     "match any value.  If the <type-of-storage-system> is HSM-type then <StorageClass> is"+
+                     "constructed by joining the store-name and store-group with a colon:"+
+                     "<StoreName>:<StoreGroup>@osm (\"run2010@osm\" or \"*@osm\")."+
+                     "When the Regex is turned on the both \"*@osm\" and \"*@\"* regular expressions " +
+                     "are considered valid while searching for the matching unit." +
+                     " If the unit name does not match the pattern \"Unit not found\" exception" +
+                     " will be raised.\n." +
+                     "If the regex is turned off only \"*@\"* regular expressions is valid and only non HSM-type" +
+                     "could be matched." )
     public class PsuSetRegexCommand implements Callable<String>
     {
         @Argument(valueSpec = "ON|OFF",
-                  usage = "")
+                  usage = "Switch used ")
         String _useRegex;
 
         @Override
@@ -416,31 +454,31 @@ public class PoolSelectionUnitCommands implements CellCommandListener {
     }*/
 
     @Command(name = "psu unlink",
-             hint = "Removes the specified link form the list of links mapped to the specified pool or " +
+             hint = "deletes the pool from the link",
+             description = "Removes the specified link form the list of links mapped to the specified pool or " +
                      "pool group (pools grouped together). Deletes as well the specified pool/pool group " +
                      "from the list of pools mapped to the given link. If the specified link  or pool/pool group" +
                      " names do not exist returns \"Not found\" exception. If the given link name is not associated " +
                      "with the given pool/ pool group returns exception that the \"given pool is not a member of the " +
                      "specified link\"")
-    public class PsuSetPoolCommand implements Callable<String>
+    public class PsuUnlinkCommand implements Callable<String>
     {
         @Argument(index = 0,
                   usage = "The name of the link e.g. regular-read-link or regular-write-link." +
                           "The link is a set of rules describing which pools are permitted for which type of " +
-                          "transfer-request," +
-                          "Each link links a set of transfer-requests to a pool or group of pools" +
-                          "To create a new link please use \"psu create link\" command. ")
+                          "transfer-request, each link links a set of transfer-requests to a pool or group of pools." +
+                          "To create a new link please use \"psu create link\" and \"psu set link\" command. ")
         String link;
 
         @Argument(index = 1,
-                  valueSpec = "POOL|POOL GROUP",
+                  valueSpec = "POOL|POOLGROUP",
                   usage = "The name of the pool or pool group associated to the specified link.")
-        String poolOrGpool;
+        String poolOrPoolGroup;
 
         @Override
         public String call() throws IllegalArgumentException
         {
-            psuAccess.unlink(link, poolOrGpool);
+            psuAccess.unlink(link, poolOrPoolGroup);
             return "";
         }
 
