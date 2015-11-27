@@ -223,175 +223,20 @@
 	<property name="templateConfig" ref="template-config"/>
     </bean>
 
-<!--
 
-    <util:list id="filters" value-type="org.eclipse.jetty.servlet.FilterHolder">
-        <bean id="springSecurityFilterChain" class="org.eclipse.jetty.servlet.FilterHolder">
-            <property name="className" value="org.springframework.web.filter.DelegatingFilterProxy"/>
-            <property name="name" value="springSecurityFilterChain"/>
-        </bean>
-        <bean class="org.eclipse.jetty.servlet.FilterHolder">
-            <property name="className" value="org.springframework.web.filter.CharacterEncodingFilter"/>
-            <property name="name" value="encodingFilter"/>
-            <property name="initParameters">
-                <map>
-                    <entry key="encoding" value="UTF-8"/>
-                    <entry key="forceEncoding" value="true"/>
-                </map>
-            </property>
-        </bean>
-    </util:list>
-
-    &lt;!&ndash;filter mappings&ndash;&gt;
-    <util:list id="filterMappings" value-type="org.eclipse.jetty.servlet.FilterMapping">
-        <bean class="org.eclipse.jetty.servlet.FilterMapping">
-            <property name="filterName" value="springSecurityFilterChain"/>
-            <property name="dispatcherTypes" value="#{T(java.util.EnumSet).allOf(T(javax.servlet.DispatcherType))}"/>
-            <property name="pathSpec" value="/*"/>
-        </bean>
-        <bean class="org.eclipse.jetty.servlet.FilterMapping">
-            <property name="filterName" value="encodingFilter"/>
-            <property name="dispatcherTypes" value="#{T(java.util.EnumSet).allOf(T(javax.servlet.DispatcherType))}"/>
-            <property name="pathSpec" value="/*"/>
-        </bean>
-    </util:list>
-
-    &lt;!&ndash;servlets&ndash;&gt;
-    <util:list id="servlets" value-type="org.eclipse.jetty.servlet.ServletHolder">
-        <bean class="org.eclipse.jetty.servlet.ServletHolder">
-            <constructor-arg name="name" value="rest-api"/>
-            <constructor-arg name="servlet">
-                <bean class="org.glassfish.jersey.servlet.ServletContainer">
-                    <constructor-arg name="resourceConfig">
-                        <bean class="org.dcache.chimera.RestConfig">
-                            <constructor-arg name="packages" value="org.dcache.chimera.ChimeraResource"/>
-                        </bean>
-                    </constructor-arg>
-                </bean>
-            </constructor-arg>
-        </bean>
-    </util:list>
-
-    &lt;!&ndash;servlet mappings&ndash;&gt;
-    <util:list id="servletMappings" value-type="org.eclipse.jetty.servlet.ServletMapping">
-        <bean class="org.eclipse.jetty.servlet.ServletMapping">
-            <property name="servletName" value="rest-api"/>
-            <property name="pathSpec" value="/api/v1/*"/>
-        </bean>
-    </util:list>
-
-    &lt;!&ndash;servlet handler&ndash;&gt;
-    <bean id="servletHandler" class="org.eclipse.jetty.servlet.ServletHandler">
-        <property name="filters" ref="filters"/>
-        <property name="filterMappings" ref="filterMappings"/>
-        <property name="servlets" ref="servlets"/>
-        <property name="servletMappings" ref="servletMappings"/>
-    </bean>
-
-    &lt;!&ndash;session handler&ndash;&gt;
-    <bean id="sessionHandler" class="org.eclipse.jetty.server.session.SessionHandler">
-        <constructor-arg name="manager">
-            <bean class="org.eclipse.jetty.server.session.HashSessionManager"/>
-        </constructor-arg>
-    </bean>
-
-    &lt;!&ndash;&lt;!&ndash;web application context event listeners&ndash;&gt;
-    <util:list id="eventListeners" value-type="java.util.EventListener">
-        <bean class="org.springframework.web.context.ContextLoaderListener"/>
-    </util:list>&ndash;&gt;
-
-    &lt;!&ndash;servlet context&ndash;&gt;
-    <bean id="servletContextHandler" class="org.eclipse.jetty.servlet.ServletContextHandler">
-&lt;!&ndash;
-        <property name="eventListeners" ref="eventListeners"/>
-&ndash;&gt;
-        <property name="servletHandler" ref="servletHandler"/>
-        <property name="sessionHandler" ref="sessionHandler"/>
-    </bean-->
 
     <bean id="handlers" class="org.eclipse.jetty.server.handler.HandlerList">
         <description>List of handlers for HTTP requests</description>
         <property name="handlers">
             <list>
-                <bean class="org.eclipse.jetty.server.handler.ContextHandler">
-<!--
-                    <property name="contextPath" value="/"/>
--->
-                    <property name="handler">
-                        <!--<bean class="org.eclipse.jetty.server.handler.ResourceHandler">
-                            <property name="directoriesListed" value="true"/>
-                            <property name="resourceBase" value="${webdav.static-content.dir.local}"/>
-                        </bean>-->
-
-
-                        <bean class="org.eclipse.jetty.servlet.ServletContextHandler">
-
-                            <property name="contextPath" value="/api/v1"/>
-                            <property name="sessionHandler">
-                                <bean class="org.eclipse.jetty.server.session.SessionHandler" >
-                                    <!--<constructor-arg name="manager">
-                                        <bean class="org.eclipse.jetty.server.session."/>
-                                    </constructor-arg>-->
-                                </bean>
-                            </property>
-                            <!--
-                                                <property name="handler">
-                            -->
-                            <property name="servletHandler">
-                                <bean class="org.eclipse.jetty.servlet.ServletHandler" >
-
-                                    <property name="servlets">
-
-                                        <bean class="org.eclipse.jetty.servlet.ServletHolder" >
-                                            <property name="name" value="rest_api"/>
-
-                                            <property name="servlet">
-
-
-                                                <bean class="org.glassfish.jersey.servlet.ServletContainer" >
-
-
-                                                    <constructor-arg name="resourceConfig">
-                                                        <!--<bean class="org.dcache.chimera.RestConfig">
-                                                         <constructor-arg name="packages" value="org.dcache.chimera.ChimeraResource"/>
-                                                     </bean>-->
-                                                        <bean class="org.glassfish.jersey.server.ResourceConfig">
-
-                                                            <property name="properties">
-                                                                <map>
-                                                                    <entry key="jersey.config.server.provider.packages"
-                                                                           value="org.dcache.chimera.ChimeraResource" />
-                                                                </map>
-                                                            </property>
-                                                        </bean>
-                                                    </constructor-arg>
-                                                </bean>
-                                            </property>
-
-                                        </bean>
-
-                                    </property>
-
-                                    <property name="servletMappings">
-                                        <list>
-                                            <bean class="org.eclipse.jetty.servlet.ServletMapping">
-                                                <property name="servletName" value="rest_api"/>
-                                                <property name="pathSpec" value="/*"/>
-
-                                            </bean>
-                                        </list>
-                                    </property>
-                                </bean>
-                            </property>
-                        </bean>
-
-
-                    </property>
-                </bean>
 
 
 
-                <bean class="org.eclipse.jetty.server.handler.ContextHandler">
+
+
+
+
+                <!--<bean class="org.eclipse.jetty.server.handler.ContextHandler">
                     <property name="contextPath" value="${webdav.static-content.location}"/>
                     <property name="handler">
                         <bean class="org.eclipse.jetty.server.handler.ResourceHandler">
@@ -399,7 +244,7 @@
                             <property name="resourceBase" value="${webdav.static-content.dir.local}"/>
                         </bean>
                     </property>
-                </bean>
+                </bean>-->
                 <bean class="org.eclipse.jetty.server.handler.ContextHandler">
                     <property name="contextPath" value="${webdav.static-content.location}"/>
                     <property name="handler">
@@ -420,200 +265,97 @@
                 </bean>
 
 
-<!--
-                <list id="filters" value-type="org.eclipse.jetty.servlet.FilterHolder">
-                    <bean id="springSecurityFilterChain" class="org.eclipse.jetty.servlet.FilterHolder">
-                        <property name="className" value="org.springframework.web.filter.DelegatingFilterProxy"/>
-                        <property name="name" value="springSecurityFilterChain"/>
-                    </bean>
-                    <bean class="org.eclipse.jetty.servlet.FilterHolder">
-                        <property name="className" value="org.springframework.web.filter.CharacterEncodingFilter"/>
-                        <property name="name" value="encodingFilter"/>
-                        <property name="initParameters">
-                            <map>
-                                <entry key="encoding" value="UTF-8"/>
-                                <entry key="forceEncoding" value="true"/>
-                            </map>
-                        </property>
-                    </bean>
-                </list>-->
-                <!--<bean class="org.eclipse.jetty.servlet.ServletContextHandler" >
-                    <property name="contextPath" value="/api/v1"/>
-                    <property name="handler">
-                        <bean class="org.eclipse.jetty.servlet.ServletHandler">
-                       <property name="filters">
-
-                           <bean class="org.eclipse.jetty.servlet.FilterHolder">
-
-
-                               <property name="className" value="org.springframework.web.filter.CharacterEncodingFilter"/>
-                               <property name="name" value="encodingFilter"/>
-
-                               <property name="initParameters">
-                                   <map>
-                                       <entry key="encoding" value="UTF-8"/>
-                                       <entry key="forceEncoding" value="true"/>
-                                   </map>
-                               </property>
-
-                           </bean>
-                       </property>
-
-                            <property name="filterMappings">
-                                <bean class="org.eclipse.jetty.servlet.FilterMapping">
-                                    <property name="filterName" value="encodingFilter"/>
-                                    <property name="dispatcherTypes" value="#{T(java.util.EnumSet).allOf(T(javax.servlet.DispatcherType))}"/>
-                                    <property name="pathSpec" value="/*"/>
-                                </bean>
-                               &lt;!&ndash; <bean class="org.eclipse.jetty.servlet.FilterMapping">
-                                    <property name="filterName" value="encodingFilter"/>
-                                    <property name="dispatcherTypes" value="#{T(java.util.EnumSet).allOf(T(javax.servlet.DispatcherType))}"/>
-                                    <property name="pathSpec" value="/*"/>
-                                </bean>&ndash;&gt;
-                            </property>
-                            <property name="servlets">
-                                <bean class="org.eclipse.jetty.servlet.ServletHolder">
-                                    &lt;!&ndash;<property name="initParameters">
-                                        <map>
-                                            <entry key="jersey.config.server.provider.packages"
-                                                   value="org.dcache.chimera.ChimeraResource" />
-                                        </map>
-                                    </property>&ndash;&gt;
-                                    <constructor-arg name="name" value="rest_api"/>
-                                    <constructor-arg name="servlet">
-                                        <bean class="org.glassfish.jersey.servlet.ServletContainer">
-
-
-                                            <constructor-arg name="resourceConfig" >
 
 
 
-                                                <bean class="org.dcache.chimera.RestConfig">
-                                                    <constructor-arg name="packages" value="org.dcache.chimera.ChimeraResource"/>
-                                                </bean>
-
-
-
-                                              &lt;!&ndash;  <bean class="org.glassfish.jersey.server.ResourceConfig">
-                                                    <lookup-method name=""
-
-                                                    <constructor-arg name="classes" value="org.dcache.chimera.ChimeraResource">
-
-                                                    </constructor-arg>
-                                                </bean>&ndash;&gt;
-                                            </constructor-arg>
-
-
-
-
-                                        </bean>
-                                    </constructor-arg>
-
-                                </bean>
-                            </property>
-
-                            <property name="servletMappings">
-                          <list>
-                               <bean class="org.eclipse.jetty.servlet.ServletMapping">
-                               <property name="pathSpec" value="/api/v1"/>
-                                  <property name="servletName" value="rest_api"/>
-                                      </bean>
-                                       </list>
-                            </property>
-                            </bean>
-                    </property>
-                </bean>
-
-
-
-         private Server configureServer() {
-		ResourceConfig resourceConfig = new ResourceConfig();
-		Map<String, Object> p = new HashMap<String, Object>();
-		p.put("jersey.config.server.provider.packages", HelloWorldResource.class.getPackage().getName() );
-		resourceConfig.setProperties(p);
-		//resourceConfig.packages(HelloWorldResource.class.getPackage().getName());
-		resourceConfig.register(JacksonFeature.class);
-		ServletContainer servletContainer = new ServletContainer(resourceConfig);
-		ServletHolder sh = new ServletHolder(servletContainer);
-		//sh.setInitOrder(1);
-		Server server = new Server(serverPort);
-		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-        context.setContextPath("/");
-        context.addServlet(sh, "/*");
-		server.setHandler(context);
-		return server;
-	}
--->
-
-
-
-
-                <!--                <bean class="org.eclipse.jetty.servlet.ServletContextHandler">
-                                    <property name="contextPath" value="/api/v1"/>
-
-                                    <property name="handler">
-                                        <bean class="org.eclipse.jetty.servlet.ServletHandler" >
-
-                                            <property name="servlets">
-                                                <bean class="org.eclipse.jetty.servlet.ServletHolder" >
-
-                                                    <property name="initOrder" value="1"/>
-                                                    <property name="name" value="rest_api"/>
-
-
-
-                                                    <constructor-arg name="name" value="rest-api"/>
-
-                                                    <constructor-arg name="servlet" >
-
-
-                                                        <bean class="org.glassfish.jersey.servlet.ServletContainer" >
-
-                                                            <constructor-arg name="resourceConfig">
-                                                                &lt;!&ndash;<bean class="org.dcache.chimera.RestConfig">
-                                                                    <constructor-arg name="packages" value="org.dcache.chimera.ChimeraResource"/>
-                                                                </bean>&ndash;&gt;
-                                                                <bean class="org.glassfish.jersey.server.ResourceConfig">
-
-                                                                    <property name="properties">
-                                                                        <map>
-                                                                            <entry key="jersey.config.server.provider.packages"
-                                                                                value="org.dcache.chimera.ChimeraResource" />
-                                                                        </map>
-                                                                    </property>
-                                                                </bean>
-
-                                                            </constructor-arg>
-                                                        </bean>
-                                                    </constructor-arg>
-
-
-                                                </bean>
-
-                                            </property>
-
-                                            <property name="servletMappings">
-                                                <list>
-                                                    <bean class="org.eclipse.jetty.servlet.ServletMapping">
-                                                        <property name="servletName" value="rest_api"/>
-                                                        <property name="pathSpec" value="/api/v1"/>
-
-                                                    </bean>
-                                                </list>
-                                            </property>
-
-                                        </bean>
-                                    </property>
-                                </bean>-->
-
-<!--
-                <ref bean="servletContextHandler"/>
--->
 
                 <bean class="org.dcache.webdav.MiltonHandler">
                     <property name="httpManager" ref="http-manager"/>
                 </bean>
 
+
+
+              <!--   <bean class="org.eclipse.jetty.server.handler.ContextHandler">
+                     <property name="contextPath" value="/"/>
+
+                    <property name="handler">
+
+-->
+
+
+                <bean class="org.eclipse.jetty.servlet.ServletContextHandler">
+
+
+                    <property name="servletHandler">
+
+                        <bean class="org.eclipse.jetty.servlet.ServletHandler">
+
+
+                            <property name="servlets">
+                                <list>
+                                    <bean class="org.eclipse.jetty.servlet.ServletHolder">
+                                        <property name="name" value="rest"/>
+
+                                        <constructor-arg name="servlet">
+
+
+                                            <bean class="org.glassfish.jersey.servlet.ServletContainer">
+
+
+                                                <constructor-arg name="resourceConfig">
+
+                                                    <bean class="org.glassfish.jersey.server.ResourceConfig">
+
+                                                        <property name="properties">
+                                                            <map>
+                                                                <entry key="jersey.config.server.provider.packages"
+                                                                       value="org.dcache.chimera.ChimeraResource"/>
+                                                            </map>
+                                                        </property>
+                                                    </bean>
+                                                </constructor-arg>
+                                            </bean>
+                                        </constructor-arg>
+
+                                    </bean>
+                                </list>
+                            </property>
+
+                            <property name="servletMappings">
+                                <list>
+                                    <bean class="org.eclipse.jetty.servlet.ServletMapping">
+                                        <property name="pathSpec" value="/api/*"/>
+                                        <property name="servletName" value="rest"/>
+
+
+
+
+                                    </bean>
+                                </list>
+                            </property>
+                        </bean>
+
+                    </property>
+
+
+                    <!--         <property name="contextPath" value="/api/v1"/>
+                             <property name="sessionHandler">
+                                 <bean class="org.eclipse.jetty.server.session.SessionHandler">
+                                     &lt;!&ndash;<constructor-arg name="manager">
+                                         <bean class="org.eclipse.jetty.server.session."/>
+                                     </constructor-arg>&ndash;&gt;
+                                 </bean>
+                             </property>-->
+
+                    <property name="contextPath" value="/"/>
+
+
+                </bean>
+
+             <!--    </property>
+
+
+             </bean>-->
                 <bean class="org.eclipse.jetty.server.handler.DefaultHandler"/>
 
 
