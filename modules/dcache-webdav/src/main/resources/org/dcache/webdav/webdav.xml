@@ -222,8 +222,6 @@
         <property name="templateResource" value="${webdav.templates.html}"/>
 	<property name="templateConfig" ref="template-config"/>
     </bean>
-   <!-- <bean id="provider" class="org.dcache.chimera.namespace.ChimeraNameSpaceProvider">
-    </bean>-->
 
     <bean id="handlers" class="org.eclipse.jetty.server.handler.HandlerList">
         <description>List of handlers for HTTP requests</description>
@@ -265,7 +263,7 @@
                                         <property name="servletName" value="rest"/>
                                         <property name="pathSpecs">
                                             <list>
-                                                <value>/api/*</value>
+                                                <value>/rest_api/*</value>
                                             </list>
                                         </property>
                                     </bean>
@@ -277,29 +275,14 @@
                     </property>
                     <property name="attributes">
                         <bean class="org.dcache.util.jetty.ImmutableAttributesMap">
-                           <constructor-arg>
+                            <constructor-arg>
                                 <map>
                                     <entry key="#{ T(org.dcache.chimera.namespace.ChimeraResource).FS}"
                                            value-ref="pnfs-stub"/>
                                 </map>
-
-                               <!--<map>
-                                   <entry key="#{ T(org.dcache.chimera.namespace.ChimeraResource).FS}">
-                                       <bean class="org.dcache.chimera.namespace.ChimeraNameSpaceProvider">
-                                       </bean>
-                                   </entry>
-
-                               </map>-->
-
-                              <!-- <map>
-                                   <entry key="#{ T(org.dcache.chimera.namespace.ChimeraResource).FS}"
-                                          value-ref="provider"/>
-                               </map>-->
                             </constructor-arg>
-
                         </bean>
                     </property>
-
                 </bean>
 
                 <bean class="org.eclipse.jetty.server.handler.ContextHandler">
