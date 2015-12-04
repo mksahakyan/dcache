@@ -246,9 +246,21 @@
                                                         <property name="properties">
                                                             <map>
                                                                 <entry key="jersey.config.server.provider.packages"
-                                                                       value="org.dcache.chimera.namespace"/>
+                                                                       value="org.dcache.webapi"/>
+                                                               <!-- <entry key="jersey.config.server.provider.packages"
+                                                                       value="org.dcache.chimera.namespace"/>-->
+                                                                <!--<entry key="jersey.config.server.provider.classnames"
+                                                                       value="org.glassfish.jersey.jackson.JacksonFeature"/>
+
+                                                                    <entry key="jersey.config.server.provider.classnames"
+                                                                           value="org.glassfish.jersey.jackson.JacksonBinder"/>-->
+                                                                    <!-- <entry key="jersey.config.server.provider.packages"
+                                                                            value="org.dcache.chimera.namespace"/>-->
+
                                                             </map>
                                                         </property>
+
+
                                                     </bean>
                                                 </constructor-arg>
                                             </bean>
@@ -277,8 +289,10 @@
                         <bean class="org.dcache.util.jetty.ImmutableAttributesMap">
                             <constructor-arg>
                                 <map>
-                                    <entry key="#{ T(org.dcache.chimera.namespace.ChimeraResource).FS}"
+                                    <entry key="#{ T(org.dcache.webapi.RestResponce).FS}"
                                            value-ref="pnfs-stub"/>
+                                   <!-- <entry key="#{ T(org.dcache.chimera.namespace.ChimeraResource).FS}"
+                                           value-ref="pnfs-stub"/>-->
                                 </map>
                             </constructor-arg>
                         </bean>
