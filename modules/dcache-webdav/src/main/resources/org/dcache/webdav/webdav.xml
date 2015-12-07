@@ -249,10 +249,10 @@
                                                                        value="org.dcache.webapi"/>
                                                                <!-- <entry key="jersey.config.server.provider.packages"
                                                                        value="org.dcache.chimera.namespace"/>-->
-                                                                <!--<entry key="jersey.config.server.provider.classnames"
+                                                                <entry key="jersey.config.server.provider.classnames"
                                                                        value="org.glassfish.jersey.jackson.JacksonFeature"/>
 
-                                                                    <entry key="jersey.config.server.provider.classnames"
+                                                                    <!--<entry key="jersey.config.server.provider.classnames"
                                                                            value="org.glassfish.jersey.jackson.JacksonBinder"/>-->
                                                                     <!-- <entry key="jersey.config.server.provider.packages"
                                                                             value="org.dcache.chimera.namespace"/>-->

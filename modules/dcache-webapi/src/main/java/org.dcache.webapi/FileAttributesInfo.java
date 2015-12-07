@@ -1,15 +1,15 @@
 package org.dcache.webapi;
 
-
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 
 /**
  * Created by sahakya on 12/4/15.
  */
 
 @XmlRootElement
-public class JsonObject {
+public class FileAttributesInfo {
 
     /**
      * file's size
@@ -152,22 +152,22 @@ public class JsonObject {
     }
 
     // JAXB needs this
-    public JsonObject() {
+    public FileAttributesInfo() {
     }
 
 
-    public JsonObject(String fileType, String  pnfsId) {
+    public FileAttributesInfo(String fileType, String pnfsId) {
         super();
 
         this.fileType = fileType.toString();
-        this.pnfsId  = pnfsId;
+        this.pnfsId = pnfsId;
 
 
     }
 
     @Override
     public String toString() {
-        return "JsonObject{" +
+        return "FileAttributesInfo{" +
                 "size=" + size +
                 ", ctime=" + ctime +
                 ", creationTime=" + creationTime +

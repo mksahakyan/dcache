@@ -19,10 +19,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 
-
-import net.sf.saxon.instruct.Template;
 import org.dcache.cells.CellStub;
 import org.dcache.namespace.FileAttribute;
 import org.dcache.vehicles.FileAttributes;
@@ -30,62 +27,19 @@ import org.dcache.vehicles.FileAttributes;
 @Path("ws")
 public class RestResponce {
 
-    private static final String TEMPLATE = "Hello, %s!";
-
-    public final static String FS = "org.dcache.webapi";
-    public RestResponce() {
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>> Chimera resource started");
-
-
-    }
-
-    @GET
-    @Path("/{name}")
-    @Produces(MediaType.APPLICATION_XML)
-    public JsonObject sayHello(@PathParam("name") String name) {
-        JsonObject jsonObject = new JsonObject(String.format(TEMPLATE, name));
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>> NAME" + name);
-
-
-        //return jsonObject;
-        return  jsonObject;
-    }
-
-
     @Context
     ServletContext ctx;
 
+    public final static String FS = "org.dcache.webapi";
 
-
-
-    /*@GET
-    @Path("/stats/{fileid}")
-    @Produces("text/plain")
-    public String getFileStatus(@PathParam("fileid") String fileid) throws IOException, CacheException, ClassNotFoundException, IllegalAccessException, InstantiationException {
-
-
-        CellStub nameCellStub = (CellStub) (ctx.getAttribute(FS));
-
-        PnfsHandler pnfs = new PnfsHandler(nameCellStub);
-        Set<FileAttribute> attrs = EnumSet.of(
-                FileAttribute.MODE,
-                FileAttribute.OWNER,
-                FileAttribute.OWNER_GROUP,
-                FileAttribute.PNFSID,
-                FileAttribute.TYPE,
-                FileAttribute.MODIFICATION_TIME,
-                FileAttribute.CREATION_TIME);
-        FileAttributes fa = pnfs.getFileAttributes(new PnfsId(fileid), attrs);
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>> test for pnfsID" + fa);
-
-        return "OK";
+    public RestResponce() {
     }
-*/
+
 
     @GET
     @Path("/stats/{fileid}")
     @Produces({"application/xml", "application/json"})
-    public JsonObject getFileStatus(@PathParam("fileid") String fileid) throws IOException, CacheException, ClassNotFoundException, IllegalAccessException, InstantiationException {
+    public FileAttributesInfo getFileStatus(@PathParam("fileid") String fileid) throws IOException, CacheException, ClassNotFoundException, IllegalAccessException, InstantiationException {
 
         CellStub nameCellStub = (CellStub) (ctx.getAttribute(FS));
 
@@ -101,11 +55,16 @@ public class RestResponce {
         FileAttributes fa = pnfs.getFileAttributes(new PnfsId(fileid), attrs);
         System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>> test for pnfsID" + fa);
 
-        JsonObject jsonObject = new JsonObject(fa.getFileType().toString(), fa.getMode());
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>> jsonObject" + jsonObject.toString());
+        FileAttributesInfo fileAttributesInfo = new FileAttributesInfo();
+        fileAttributesInfo.setMode(fa.getMode());
+        fileAttributesInfo.setOwner(fa.getOwner());
+        fileAttributesInfo.setGroup(fa.getGroup());
+        fileAttributesInfo.setPnfsId(fa.getPnfsId().toIdString());
+        fileAttributesInfo.setMtime(fa.getModificationTime());
+        fileAttributesInfo.setCreationTime(fa.getCreationTime());
 
 
-        return jsonObject;
+        return fileAttributesInfo;
     }
 
 }
