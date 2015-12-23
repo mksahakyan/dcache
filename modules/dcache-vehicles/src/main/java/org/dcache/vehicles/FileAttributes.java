@@ -1,5 +1,7 @@
 package org.dcache.vehicles;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
@@ -52,6 +54,7 @@ import static org.dcache.namespace.FileAttribute.*;
  *
  * @since 1.9.5
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class FileAttributes implements Serializable {
 
 
@@ -164,6 +167,7 @@ public class FileAttributes implements Serializable {
     private String _cacheClass;
 
     /** Throws IllegalStateException if attribute is not defined. */
+    @JsonIgnore
     private void guard(FileAttribute attribute)
         throws IllegalStateException
     {
@@ -204,16 +208,18 @@ public class FileAttributes implements Serializable {
     }
 
     @Nonnull
+    @JsonIgnore
     public AccessLatency getAccessLatency() {
         guard(ACCESS_LATENCY);
         return _accessLatency;
     }
 
     @Nonnull
+    @JsonIgnore
     public Optional<AccessLatency> getAccessLatencyIfPresent() {
         return toOptional(ACCESS_LATENCY, _accessLatency);
     }
-
+    @JsonIgnore
     public long getAccessTime()
     {
         guard(ACCESS_TIME);
@@ -221,6 +227,7 @@ public class FileAttributes implements Serializable {
     }
 
     @Nonnull
+    @JsonIgnore
     public ACL getAcl()
     {
         guard(ACL);
@@ -228,12 +235,14 @@ public class FileAttributes implements Serializable {
     }
 
     @Nonnull
+    @JsonIgnore
     public Set<Checksum> getChecksums() {
         guard(CHECKSUM);
         return _checksums;
     }
 
     @Nonnull
+    @JsonIgnore
     public Optional<Set<Checksum>> getChecksumsIfPresent() {
         return toOptional(CHECKSUM, _checksums);
     }
@@ -243,6 +252,7 @@ public class FileAttributes implements Serializable {
      * @return file type
      */
     @Nonnull
+    @JsonIgnore
     public FileType getFileType() {
         guard(TYPE);
         return _fileType;
@@ -252,11 +262,12 @@ public class FileAttributes implements Serializable {
      * Get group id to which file belongs to.
      * @return group id
      */
+    @JsonIgnore
     public int getGroup() {
         guard(OWNER_GROUP);
         return _group;
     }
-
+    @JsonIgnore
     public int getMode() {
         guard(MODE);
         return _mode;
@@ -267,6 +278,7 @@ public class FileAttributes implements Serializable {
      *
      * @return time in milliseconds since 1 of January 1970 00:00.00
      */
+    @JsonIgnore
     public long getChangeTime() {
         guard(CHANGE_TIME);
         return _ctime;
@@ -276,6 +288,7 @@ public class FileAttributes implements Serializable {
      * Get file's creation time.
      * @return time in milliseconds since 1 of January 1970 00:00.00
      */
+    @JsonIgnore
     public long getCreationTime() {
         guard(CREATION_TIME);
         return _creationTime;
@@ -285,6 +298,7 @@ public class FileAttributes implements Serializable {
      * Get file's last modification time.
      * @return time in milliseconds since 1 of January 1970 00:00.00
      */
+    @JsonIgnore
     public long getModificationTime() {
         guard(MODIFICATION_TIME);
         return _mtime;
@@ -294,21 +308,25 @@ public class FileAttributes implements Serializable {
      * Get owner id to whom file belongs to.
      * @return owner id
      */
+    @JsonIgnore
     public int getOwner() {
         guard(OWNER);
         return _owner;
     }
 
     @Nonnull
+    @JsonIgnore
     public RetentionPolicy getRetentionPolicy() {
         guard(RETENTION_POLICY);
         return _retentionPolicy;
     }
 
     @Nonnull
+
     public Optional<RetentionPolicy> getRetentionPolicyIfPresent() {
         return toOptional(RETENTION_POLICY, _retentionPolicy);
     }
+    @JsonIgnore
 
     public long getSize() {
         guard(SIZE);
@@ -320,13 +338,16 @@ public class FileAttributes implements Serializable {
     }
 
     @Nonnull
-    public PnfsId getPnfsId()
-    {
+    @JsonIgnore
+
+    public PnfsId getPnfsId() {
         guard(PNFSID);
         return _pnfsId;
     }
 
     @Nonnull
+    @JsonIgnore
+
     public StorageInfo getStorageInfo()
     {
         guard(STORAGEINFO);
@@ -412,6 +433,8 @@ public class FileAttributes implements Serializable {
     }
 
     @Nonnull
+    @JsonIgnore
+
     public Map<String, String> getFlags() {
         guard(FLAGS);
         return _flags;

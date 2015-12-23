@@ -243,8 +243,10 @@
                                                           <map>
                                                               <entry key="jersey.config.server.provider.packages"
                                                                      value="org.dcache.webapi"/>
-                                                              <entry key="jersey.config.server.provider.classnames"
-                                                                     value="org.glassfish.jersey.jackson.JacksonFeature"/>
+                                                              <!--<entry key="jersey.config.server.provider.classnames"
+                                                                     value="org.dcache.webapi.CustomJsonProvider"/>-->
+                                                              <!--<entry key=" jersey.config.disableMoxyJson.server"
+                                                                     value="true"/>-->
                                                           </map>
                                                       </property>
                                                   </bean>
@@ -266,6 +268,16 @@
                                   </bean>
                               </list>
                           </property>
+                      </bean>
+                  </property>
+                  <property name="attributes">
+                      <bean class="org.dcache.util.jetty.ImmutableAttributesMap">
+                          <constructor-arg>
+                              <map>
+                                  <entry key="#{ T(org.dcache.webapi.DirectoryTree).DL}"
+                                         value-ref="list-handler"/>
+                              </map>
+                          </constructor-arg>
                       </bean>
                   </property>
               </bean>
