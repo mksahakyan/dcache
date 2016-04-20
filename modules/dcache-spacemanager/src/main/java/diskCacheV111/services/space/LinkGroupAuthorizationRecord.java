@@ -26,7 +26,7 @@ public class LinkGroupAuthorizationRecord {
                 }
 		return sb.toString();
 	}
-
+    //blabla
     public String getLinkGroupName() {
         return linkGroupName;
     }
