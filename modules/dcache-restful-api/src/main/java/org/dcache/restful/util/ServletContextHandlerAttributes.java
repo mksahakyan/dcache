@@ -47,4 +47,10 @@ public class ServletContextHandlerAttributes
     {
         return (RemotePoolMonitor) (ctx.getAttribute(PM));
     }
+
+    public static CellStub getCellStub(ServletContext ctx)
+    {
+        CellStub cellStub = (CellStub) (ctx.getAttribute(CS));
+        return cellStub;
+    }
 }
