@@ -13,29 +13,26 @@ import org.dcache.cells.CellStub;
 import org.dcache.poolmanager.RemotePoolMonitor;
 import org.dcache.util.list.ListDirectoryHandler;
 
-public class ServletContextHandlerAttributes
-{
+public class ServletContextHandlerAttributes {
     public final static String DL = "org.dcache.restful";
     public final static String CS = "org.dcache.restful.CS";
     public final static String PM = "org.dcache.restful.PM";
+    public final static String PinMang = "org.dcache.restful.PinMang";
 
-    public static Subject getSubject()
-    {
+
+    public static Subject getSubject() {
         return Subject.getSubject(AccessController.getContext());
     }
 
-    public static Restriction getRestriction()
-    {
+    public static Restriction getRestriction() {
         return Restrictions.readOnly();
     }
 
-    public static ListDirectoryHandler getListDirectoryHandler(ServletContext ctx)
-    {
+    public static ListDirectoryHandler getListDirectoryHandler(ServletContext ctx) {
         return (ListDirectoryHandler) (ctx.getAttribute(DL));
     }
 
-    public static PnfsHandler getPnfsHandler(ServletContext ctx)
-    {
+    public static PnfsHandler getPnfsHandler(ServletContext ctx) {
         CellStub cellStub = (CellStub) (ctx.getAttribute(CS));
         PnfsHandler handler = new PnfsHandler(cellStub);
         handler.setSubject(getSubject());
@@ -43,14 +40,12 @@ public class ServletContextHandlerAttributes
         return handler;
     }
 
-    public static RemotePoolMonitor getRemotePoolMonitor(ServletContext ctx)
-    {
+    public static RemotePoolMonitor getRemotePoolMonitor(ServletContext ctx) {
         return (RemotePoolMonitor) (ctx.getAttribute(PM));
     }
 
-    public static CellStub getCellStub(ServletContext ctx)
-    {
-        CellStub cellStub = (CellStub) (ctx.getAttribute(CS));
+    public static CellStub getPinMang(ServletContext ctx) {
+        CellStub cellStub = (CellStub) (ctx.getAttribute(PinMang));
         return cellStub;
     }
 }

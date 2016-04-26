@@ -21,6 +21,9 @@ public class PinManagerPinMessage extends Message
 
     private FileAttributes _fileAttributes;
     private final ProtocolInfo _protocolInfo;
+    /**
+     * pin lifetime in millis
+     */
     private long _lifetime;
     private long _pinId;
     private String _pool;

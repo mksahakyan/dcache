@@ -61,11 +61,11 @@ public class FileResources {
      * The method offer to list the content of a directory or return metadata of
      * a specified file or directory.
      *
-     * @param children optional boolean parameter, set to false by default.
+     * @param isList optional boolean parameter, set to false by default.
      *                 When set to true (e.g. /?children=true) the file attributes(e.g.  file size, locality, creation time... )
      *                 of the children (files/directories) of
      *                 the specified directory will be displayed.
-     * @param locality optional boolean parameter, set to false by default.
+     * @param isLocality optional boolean parameter, set to false by default.
      *                 When set to true the locality of file (ONLINE/NEARLINE) is displayed as a part of FileAttributes.
      * @return JsonFileAttributes  Json Object
      * <p>
@@ -114,8 +114,7 @@ public class FileResources {
                                                 @DefaultValue("false")
                                                 @QueryParam("children") boolean isList,
                                                 @DefaultValue("false")
-                                                @QueryParam("locality") boolean isLocality,
-                                                @DefaultValue("false") @QueryParam("pin") boolean pin) throws CacheException {
+                                                @QueryParam("locality") boolean isLocality) throws CacheException {
         JsonFileAttributes fileAttributes = new JsonFileAttributes();
         Set<FileAttribute> attributes = EnumSet.allOf(FileAttribute.class);
         PnfsHandler handler = ServletContextHandlerAttributes.getPnfsHandler(ctx);
@@ -127,10 +126,6 @@ public class FileResources {
 
             FileAttributes namespaceAttrributes = handler.getFileAttributes(path, attributes);
             chimeraToJsonAttributes(fileAttributes, namespaceAttrributes, handler, isLocality);
-            if(pin){
-                pinNotify(namespaceAttrributes);
-            }
-
 
             // fill children list id it's a directory and listing is requested
             if (namespaceAttrributes.getFileType() == FileType.DIR && isList) {
@@ -154,9 +149,6 @@ public class FileResources {
 
 
                     chimeraToJsonAttributes(childrenAttributes, entry.getFileAttributes(), handler, isLocality);
-                    if(pin){
-                        pinNotify(entry.getFileAttributes());
-                    }
                     childrenAttributes.setFileName(fName);
                     children.add(childrenAttributes);
                 }
@@ -201,59 +193,6 @@ public class FileResources {
         }
     }
 
-    private void  pin(FileAttributes attributes){
-
-        if (attributes.getFileType() != FileType.DIR){
-            CellStub cellStub = ServletContextHandlerAttributes.getCellStub(ctx);
-
-            PinRequestProcessor pinRequestProcessor = new PinRequestProcessor();
-            pinRequestProcessor.setPnfsStub(cellStub);
-            pinRequestProcessor.setMaxLifetime(-1);
-            pinRequestProcessor.setPoolStub(cellStub);
-            pinRequestProcessor.setPoolManagerStub(cellStub);
-
-            DCapProtocolInfo protocolInfo =
-                    new DCapProtocolInfo("DCap", 3, 0, new InetSocketAddress("localhost", 0));
-            PinManagerPinMessage message =
-                    new PinManagerPinMessage(attributes, protocolInfo, null, -1);
-            try {
-                pinRequestProcessor.messageArrived(message);
-            } catch (CacheException e) {
-                e.printStackTrace();
-            }
-        }
-
-
-    }
-
-    private void pinNotify(FileAttributes attributes){
-        if (attributes.getFileType() != FileType.DIR){
-            CellStub cellStub = ServletContextHandlerAttributes.getCellStub(ctx);
-            PinManagerCLI pnPinManagerCLI = new PinManagerCLI();
-            pnPinManagerCLI.setPnfsStub(cellStub);
-
-
-            DCapProtocolInfo protocolInfo =
-                    new DCapProtocolInfo("DCap", 3, 0, new InetSocketAddress("localhost", 0));
-            PinManagerPinMessage message =
-                    new PinManagerPinMessage(attributes, protocolInfo, null, -1);
-            cellStub.notify(message);
-        }
-
-
-    }
-
-
-    public void unpin(PnfsId pnfsId){
-        CellStub cellStub = ServletContextHandlerAttributes.getCellStub(ctx);
-
-
-       /* UnpinRequestProcessor unpinRequestProcessor = new UnpinRequestProcessor();
-        unpinRequestProcessor.setPnfsStub(cellStub);*/
-
-        PinManagerUnpinMessage message = new PinManagerUnpinMessage(pnfsId);
-        cellStub.notify(message);
-    }
 
 
 }
