@@ -105,9 +105,10 @@ public class QOSPinning {
             CellStub pinManagerStub = ServletContextHandlerAttributes.getPinMang(ctx);
 
             long millis = (lifeTime == -1) ? -1 : TimeUnit.SECONDS.toMillis(lifeTime);
+            String client = request.getRemoteHost();
 
             DCapProtocolInfo protocolInfo =
-                    new DCapProtocolInfo("DCap", 3, 0, new InetSocketAddress("localhost", 0));
+                    new DCapProtocolInfo("DCap", 3, 0, new InetSocketAddress(client, 0));
             PinManagerPinMessage message =
                     new PinManagerPinMessage(attributes, protocolInfo, null, millis);
             pinManagerStub.notify(message);
