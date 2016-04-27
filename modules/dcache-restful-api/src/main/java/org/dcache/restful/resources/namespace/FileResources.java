@@ -182,12 +182,15 @@ public class FileResources {
      */
     private void chimeraToJsonAttributes(JsonFileAttributes fileAttributes,
                                          FileAttributes namespaceAttrributes,
+                                         PnfsHandler handler,
                                          boolean isLocality) throws CacheException {
         fileAttributes.setMtime(namespaceAttrributes.getModificationTime());
         fileAttributes.setCreationTime(namespaceAttrributes.getCreationTime());
         fileAttributes.setSize(namespaceAttrributes.getSize());
         fileAttributes.setFileType(namespaceAttrributes.getFileType());
         fileAttributes.setPath( (namespaceAttrributes.getPnfsId()).toString());
+        fileAttributes.setPath(handler.getPathByPnfsId(namespaceAttrributes.getPnfsId()).toString());
+
 
         // when user set locality param. in the request, the locality should be returned only for directories
         if (isLocality && namespaceAttrributes.getFileType() != FileType.DIR) {
