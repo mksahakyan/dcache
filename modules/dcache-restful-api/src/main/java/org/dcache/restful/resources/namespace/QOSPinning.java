@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by sahakya on 4/26/16.
  */
-@Path("/QOS")
+@Path("/qos")
 public class QOSPinning {
     @Context
     ServletContext ctx;
@@ -43,7 +43,7 @@ public class QOSPinning {
 
 
     @POST
-    @Path("/{value: [a-zA-Z0-9_/]*}/")
+    @Path("{value : .*}")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces(MediaType.APPLICATION_JSON)
     public void pin(@PathParam("value") String value, String request) throws CacheException {
@@ -55,7 +55,12 @@ public class QOSPinning {
         Set<FileAttribute> attributes = EnumSet.allOf(FileAttribute.class);
         PnfsHandler handler = ServletContextHandlerAttributes.getPnfsHandler(ctx);
 
-        FsPath path = FsPath.create(FsPath.ROOT + value);
+        FsPath path;
+        if (value == null || value.isEmpty()) {
+            path = FsPath.ROOT;
+        } else {
+            path = FsPath.create(FsPath.ROOT + value);
+        }
 
 
         try {
