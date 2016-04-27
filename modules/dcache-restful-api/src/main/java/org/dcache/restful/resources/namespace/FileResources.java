@@ -188,7 +188,6 @@ public class FileResources {
         fileAttributes.setCreationTime(namespaceAttrributes.getCreationTime());
         fileAttributes.setSize(namespaceAttrributes.getSize());
         fileAttributes.setFileType(namespaceAttrributes.getFileType());
-        fileAttributes.setPath( (namespaceAttrributes.getPnfsId()).toString());
         fileAttributes.setPath(handler.getPathByPnfsId(namespaceAttrributes.getPnfsId()).toString());
 
 
