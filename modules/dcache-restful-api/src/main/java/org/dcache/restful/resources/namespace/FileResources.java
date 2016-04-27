@@ -108,7 +108,7 @@ public class FileResources {
      * }
      */
     @GET
-    @Path("{value: [a-zA-Z0-9_/]*}/")
+    @Path("{value : .*}")
     @Produces(MediaType.APPLICATION_JSON)
     public JsonFileAttributes getFileAttributes(@PathParam("value") String value,
                                                 @DefaultValue("false")
@@ -119,7 +119,13 @@ public class FileResources {
         Set<FileAttribute> attributes = EnumSet.allOf(FileAttribute.class);
         PnfsHandler handler = ServletContextHandlerAttributes.getPnfsHandler(ctx);
 
-        FsPath path = FsPath.create(FsPath.ROOT + value);
+        
+        FsPath path;
+        if (value == null || value.isEmpty()) {
+           path = FsPath.ROOT;
+        } else {
+           path = FsPath.create(FsPath.ROOT + value);
+        }
 
 
         try {
@@ -176,12 +182,12 @@ public class FileResources {
      */
     private void chimeraToJsonAttributes(JsonFileAttributes fileAttributes,
                                          FileAttributes namespaceAttrributes,
-                                         PnfsHandler handler,
                                          boolean isLocality) throws CacheException {
         fileAttributes.setMtime(namespaceAttrributes.getModificationTime());
         fileAttributes.setCreationTime(namespaceAttrributes.getCreationTime());
         fileAttributes.setSize(namespaceAttrributes.getSize());
         fileAttributes.setFileType(namespaceAttrributes.getFileType());
+        fileAttributes.setPath( (namespaceAttrributes.getPnfsId()).toString());
 
         // when user set locality param. in the request, the locality should be returned only for directories
         if (isLocality && namespaceAttrributes.getFileType() != FileType.DIR) {
