@@ -59,7 +59,7 @@ public class QOSPinning {
         if (value == null || value.isEmpty()) {
             path = FsPath.ROOT;
         } else {
-            path = FsPath.create(FsPath.ROOT + value);
+            path = FsPath.ROOT.child(value);
         }
 
 
