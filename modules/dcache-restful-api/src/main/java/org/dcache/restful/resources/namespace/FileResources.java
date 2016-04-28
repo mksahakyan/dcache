@@ -124,7 +124,7 @@ public class FileResources {
         if (value == null || value.isEmpty()) {
            path = FsPath.ROOT;
         } else {
-           path = FsPath.create(FsPath.ROOT + value);
+           path = FsPath.ROOT.child(value);
         }
 
 
