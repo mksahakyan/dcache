@@ -1,13 +1,35 @@
 package org.dcache.restful.resources.namespace;
 
 import com.google.common.collect.Range;
-import diskCacheV111.poolManager.PoolMonitorV5;
-import diskCacheV111.util.*;
-import diskCacheV111.vehicles.DCapProtocolInfo;
-import org.dcache.cells.CellStub;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.NotAllowedException;
+import javax.ws.rs.NotFoundException;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
+
+import diskCacheV111.util.CacheException;
+import diskCacheV111.util.FileLocality;
+import diskCacheV111.util.FileNotFoundCacheException;
+import diskCacheV111.util.FsPath;
+import diskCacheV111.util.PermissionDeniedCacheException;
+import diskCacheV111.util.PnfsHandler;
+
 import org.dcache.namespace.FileAttribute;
 import org.dcache.namespace.FileType;
-import org.dcache.pinmanager.*;
 import org.dcache.poolmanager.RemotePoolMonitor;
 import org.dcache.restful.providers.JsonFileAttributes;
 import org.dcache.restful.util.ServletContextHandlerAttributes;
@@ -15,28 +37,6 @@ import org.dcache.util.list.DirectoryEntry;
 import org.dcache.util.list.DirectoryStream;
 import org.dcache.util.list.ListDirectoryHandler;
 import org.dcache.vehicles.FileAttributes;
-
-
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.NotAllowedException;
-import javax.ws.rs.InternalServerErrorException;
-
-import javax.ws.rs.core.MediaType;
-import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
 
 /**
  * RestFul API to  provide files/folders manipulation operations
@@ -119,19 +119,18 @@ public class FileResources {
         Set<FileAttribute> attributes = EnumSet.allOf(FileAttribute.class);
         PnfsHandler handler = ServletContextHandlerAttributes.getPnfsHandler(ctx);
 
-        
+
         FsPath path;
         if (value == null || value.isEmpty()) {
-           path = FsPath.ROOT;
+            path = FsPath.ROOT;
         } else {
-           path = FsPath.ROOT.child(value);
+            path = FsPath.create(FsPath.ROOT + value);
         }
-
 
         try {
 
             FileAttributes namespaceAttrributes = handler.getFileAttributes(path, attributes);
-            chimeraToJsonAttributes(fileAttributes, namespaceAttrributes, handler, isLocality);
+            chimeraToJsonAttributes(fileAttributes, namespaceAttrributes, isLocality, path.toString());
 
             // fill children list id it's a directory and listing is requested
             if (namespaceAttrributes.getFileType() == FileType.DIR && isList) {
@@ -153,8 +152,14 @@ public class FileResources {
 
                     JsonFileAttributes childrenAttributes = new JsonFileAttributes();
 
+                    String sm;
+                    if (path == FsPath.ROOT){
+                        sm = "/"+fName;
+                    } else {
+                        sm = path.toString()+"/"+fName;
+                    }
 
-                    chimeraToJsonAttributes(childrenAttributes, entry.getFileAttributes(), handler, isLocality);
+                    chimeraToJsonAttributes(childrenAttributes, entry.getFileAttributes(), isLocality, sm);
                     childrenAttributes.setFileName(fName);
                     children.add(childrenAttributes);
                 }
@@ -182,13 +187,19 @@ public class FileResources {
      */
     private void chimeraToJsonAttributes(JsonFileAttributes fileAttributes,
                                          FileAttributes namespaceAttrributes,
-                                         PnfsHandler handler,
-                                         boolean isLocality) throws CacheException {
+                                         boolean isLocality, String name) throws CacheException {
         fileAttributes.setMtime(namespaceAttrributes.getModificationTime());
         fileAttributes.setCreationTime(namespaceAttrributes.getCreationTime());
         fileAttributes.setSize(namespaceAttrributes.getSize());
         fileAttributes.setFileType(namespaceAttrributes.getFileType());
-        fileAttributes.setPath(handler.getPathByPnfsId(namespaceAttrributes.getPnfsId()).toString());
+        fileAttributes.setPath(name);
+
+//        if (path == FsPath.ROOT){
+//            fileAttributes.setPath("/");
+//        } else {
+//            fileAttributes.setPath(path.toString() + "/" + name);
+//        }
+        /*fileAttributes.setPath(handler.getPathByPnfsId(namespaceAttrributes.getPnfsId()).toString());*/
 
 
         // when user set locality param. in the request, the locality should be returned only for directories
@@ -204,4 +215,3 @@ public class FileResources {
 
 
 }
-
