@@ -1369,7 +1369,6 @@ public class BasicTest extends ChimeraTestCaseHelper {
     }
 
 
-
     @Test
     public void testGenerationVirtualdir() throws Exception {
         FsInode dir = _rootInode.mkdir("cat");
@@ -1538,7 +1537,9 @@ public class BasicTest extends ChimeraTestCaseHelper {
         assertEquals("Unexpected number of labels", 2, dirStream.stream().count());
         assertTrue("Unexpected labels",_fs.getLabels(inodeA).contains("cat") && _fs.getLabels(inodeB).contains("cat") );
 
+
     }
+
 
     @Test(expected = FileExistsChimeraFsException.class)
     public void testExclusiveCreateXattr() throws Exception {
