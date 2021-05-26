@@ -1529,6 +1529,7 @@ public class PnfsManagerV3
                 pnfsMessage.setPnfsId(attrs.getPnfsId());
                 break;
 
+            //TODO file lables
             case LINK:
                 checkArgument(pnfsMessage instanceof PnfsCreateSymLinkMessage);
                 String destination = ((PnfsCreateSymLinkMessage)pnfsMessage).getDestination();
@@ -2320,6 +2321,7 @@ public class PnfsManagerV3
                 }
             }
 
+            //TODO FILE labels
             message.setFileAttributes(attrs);
             message.setSucceeded();
             if (message.getUpdateAtime() && _atimeGap >= 0) {

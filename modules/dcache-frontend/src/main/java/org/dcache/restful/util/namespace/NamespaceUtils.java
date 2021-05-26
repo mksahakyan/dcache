@@ -77,6 +77,7 @@ public final class NamespaceUtils {
      * @param isLocality          used to check weather user queried
      *                            locality of the file
      * @param isLocations         add locations if true
+     * @param isLabels            add labels if true
      * @param isOptional          add optional attributes if true
      * @param request             to check for client info
      * @param poolMonitor         for access to remote PoolMonitor
@@ -88,6 +89,7 @@ public final class NamespaceUtils {
                                                boolean isLocations,
                                                boolean isOptional,
                                                boolean isXattr,
+                                               boolean isLabels,
                                                HttpServletRequest request,
                                                PoolMonitor poolMonitor) throws CacheException {
         json.setPnfsId(attributes.getPnfsId());
@@ -145,6 +147,11 @@ public final class NamespaceUtils {
             Map<String,String> xattr = attributes.getXattrs();
             json.setExtendedAttributes(xattr);
         }
+        if (isLabels) {
+            if (attributes.isDefined(FileAttribute.LABELS)) {
+                json.setLabels(attributes.getLabels());
+            }
+        }
     }
 
     private static String mimeTypeOf(String name, FileAttributes attributes)
@@ -159,6 +166,7 @@ public final class NamespaceUtils {
         case SPECIAL:
             return "application/vnd.dcache.special";
 
+        //TODO labels
         case REGULAR:
             if (attributes.hasXattr("mime_type")) {
                 try {

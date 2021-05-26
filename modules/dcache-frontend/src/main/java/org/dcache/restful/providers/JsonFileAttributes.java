@@ -134,6 +134,9 @@ public class JsonFileAttributes
     @ApiModelProperty("File's extended attributes.")
     private Map<String,String> xattr;
 
+    @ApiModelProperty("File's labels.")
+    private Collection<String> labels;
+
     public ACL getAcl() {
         return _acl;
     }
@@ -394,5 +397,13 @@ public class JsonFileAttributes
 
     public Map<String,String> getExtendedAttributes() {
         return xattr;
+    }
+
+    public void setLabels(Collection<String> labelnames) {
+        labels = labelnames;
+    }
+
+    public Collection<String> getLabels() {
+        return labels;
     }
 }

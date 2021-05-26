@@ -164,7 +164,7 @@ public class FileResources {
             FileAttributes namespaceAttributes = handler.getFileAttributes(path, attributes);
             NamespaceUtils.chimeraToJsonAttributes(path.name(), fileAttributes,
                                                    namespaceAttributes,
-                                                   isLocality, isLocations,
+                                                   isLocality, isLocations, true,
                                                    false, isXattr,
                                                    request, poolMonitor);
             if (isQos) {
@@ -206,7 +206,7 @@ public class FileResources {
                     NamespaceUtils.chimeraToJsonAttributes(fName,
                                                            childrenAttributes,
                                                            entry.getFileAttributes(),
-                                                           isLocality, isLocations,
+                                                           isLocality, isLocations, true,
                                                            false, isXattr,
                                                            request, poolMonitor);
                     childrenAttributes.setFileName(fName);

@@ -411,7 +411,7 @@ public class RemoteTransferHandler implements CellMessageReceiver
                     } catch (FileNotFoundCacheException e) {
                         throw new ErrorResponseException(Response.Status.SC_NOT_FOUND, "no such file");
                     }
-
+                //TODO file labels
                 case PULL:
                     PnfsCreateEntryMessage msg;
                     FileAttributes attributes = FileAttributes.of()

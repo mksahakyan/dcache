@@ -1773,6 +1773,8 @@ public class DcacheResourceFactory
                 attributes.setXattrs(xattr);
             }
 
+            //TODO file labels
+
             requestContentType().ifPresent(mt -> attributes.updateXattr("mime_type", mt));
 
             return attributes;
