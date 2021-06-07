@@ -1134,6 +1134,8 @@ public class ChimeraNameSpaceProvider
                         break;
                     case XATTR:
                         break;
+                    case LABELS:
+                        break;
                     default:
                         throw new UnsupportedOperationException("Attribute " + attribute + " not supported yet.");
                 }
