@@ -305,6 +305,12 @@ public class FileResources {
                                              + "corresponding JSON Object's "
                                              + "value is this attribute's value."
                                              + "\n"
+                                             + "If action is 'set-labels' then "
+                                             + "labels are added to a"
+                                             + "given file."
+                                             + "'labels' item value is a JSON "
+                                             + "Array with the new labels,"
+                                             + "\n"
                                              + "If action is 'chgrp' then the "
                                              + "command requests the change of "
                                              + "group-owner of the target file "
@@ -354,6 +360,13 @@ public class FileResources {
                                                          + "        \"attr-2\"\n"
                                                          + "    ]\n"
                                                          + "}"),
+                                             @ExampleProperty(mediaType = "SET-LABEL",
+                                                     value = "{\n"
+                                                     + "    \"action\" : \"set-label\",\n"
+                                                     + "    \"labels\" : [\n"
+                                                     + "        \"label-1\", \"label-2\"\n"
+                                                     + "    ]\n"
+                                                     + "}"),
                                              @ExampleProperty(mediaType = "CHGRP",
                                                      value = "{\n"
                                                          + "    \"action\" : \"chgrp\",\n"
@@ -419,6 +432,14 @@ public class FileResources {
                     }
                     pnfsHandler.writeExtendedAttribute(path, attributes, xattrSetMode);
                     break;
+
+               case "set-label":
+                    JSONArray labelObjects = reqPayload.getJSONArray("labels");
+                    for (int i = 0; i < labelObjects.length(); i++) {
+                        String label = labelObjects.getString(i);
+                        pnfsHandler.setFileAttributes(path,FileAttributes.ofLabel(labelObjects.getString(i))) ;
+                        }
+               break;
                 case "chgrp":
                     int gid = reqPayload.getInt("gid");
                     pnfsHandler.setFileAttributes(path, FileAttributes.ofGid(gid));

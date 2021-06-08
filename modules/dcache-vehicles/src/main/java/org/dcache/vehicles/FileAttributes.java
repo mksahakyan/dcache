@@ -869,6 +869,15 @@ public class FileAttributes implements Serializable, Cloneable {
         return of().location(pool).build();
     }
 
+    public static FileAttributes ofLabel(String label) {
+        return of().label(label).build();
+    }
+
+    public static FileAttributes ofLabels(Collection<String> labels) {
+        return of().labels(labels).build();
+    }
+
+
     public static FileAttributes ofLocations(Collection<String> pools)
     {
         return of().locations(pools).build();
@@ -1078,5 +1087,22 @@ public class FileAttributes implements Serializable, Cloneable {
             getXattrs().putAll(xattrs);
             return this;
         }
+
+        public Builder label(String label) {
+            if (!isDefined(LABELS)) {
+                setLabels(new ArrayList());
+            }
+            getLabels().add(label);
+            return this;
+        }
+
+        public Builder labels(Collection<String> labels) {
+            if (!isDefined(LABELS)) {
+                setLabels(new ArrayList());
+            }
+            getLabels().addAll(labels);
+            return this;
+        }
+
     }
 }
