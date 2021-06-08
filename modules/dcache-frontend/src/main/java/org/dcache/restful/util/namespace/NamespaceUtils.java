@@ -262,6 +262,7 @@ public final class NamespaceUtils {
         attributes.add(FileAttribute.SIZE);
         attributes.add(FileAttribute.TYPE);
         attributes.add(FileAttribute.XATTR);
+        attributes.add(FileAttribute.LABELS);
         attributes.add(FileAttribute.MODE);
 
         if (locations || locality || qos || optional) {

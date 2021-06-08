@@ -1007,6 +1007,7 @@ public class ChimeraNameSpaceProvider
                 }
                 attributes.setXattrs(xattrs);
                 break;
+                //test
                 case LABELS:
                     Set<String> labels = _fs.getLabels(inode);
                     for (String labelName : labels) {
