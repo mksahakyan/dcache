@@ -86,6 +86,7 @@ public final class NamespaceUtils {
                                                FileAttributes attributes,
                                                boolean isLocality,
                                                boolean isLocations,
+                                               boolean isLabels,
                                                boolean isOptional,
                                                boolean isXattr,
                                                HttpServletRequest request,
@@ -145,7 +146,14 @@ public final class NamespaceUtils {
             Map<String,String> xattr = attributes.getXattrs();
             json.setExtendedAttributes(xattr);
         }
+
+        if (isLabels) {
+            if (attributes.isDefined(FileAttribute.LABELS)) {
+                json.setLabels(attributes.getLabels());
+            }
+        }
     }
+
 
     private static String mimeTypeOf(String name, FileAttributes attributes)
     {
@@ -158,6 +166,8 @@ public final class NamespaceUtils {
 
         case SPECIAL:
             return "application/vnd.dcache.special";
+
+        //TODO labels
 
         case REGULAR:
             if (attributes.hasXattr("mime_type")) {
