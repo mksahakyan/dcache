@@ -179,6 +179,11 @@ public class FileAttributes implements Serializable, Cloneable {
      */
     private Map<String, String> _xattr;
 
+    /**
+     * File labels.
+     */
+    private Collection<String> _labels;
+
     @Override
     public FileAttributes clone()
     {
@@ -275,6 +280,10 @@ public class FileAttributes implements Serializable, Cloneable {
 
             if (isDefined(XATTR)) {
                 clone.setXattrs(_xattr);
+            }
+
+            if (isDefined(LABELS)) {
+                clone.setLabels(_labels);
             }
             return clone;
         } catch (CloneNotSupportedException e) {
@@ -659,6 +668,16 @@ public class FileAttributes implements Serializable, Cloneable {
         return _xattr;
     }
 
+    public void setLabels(Collection<String> labels) {
+        define(LABELS);
+        _labels = labels;
+    }
+
+    public Collection<String> getLabels() {
+        guard(LABELS);
+        return _labels;
+    }
+
     /**
      * Check whether an extended attribute is defined.  Unlike
      * {@link #getXattrs()}, this method does not throw an exception if
@@ -687,6 +706,18 @@ public class FileAttributes implements Serializable, Cloneable {
         String oldValue = attrs.put(name, value);
         setXattrs(attrs);
         return Optional.ofNullable(oldValue);
+    }
+
+    /**
+     * Check whether a label is defined.  Unlike
+     * {@link #getLabels()}, this method does not throw an exception if
+     * the label is not set.
+     * @param name The label name to check.
+     * @return True if there exists a label with this name.
+     */
+    public boolean hasLabel(String name)
+    {
+        return _labels != null && _labels.contains(name);
     }
 
     /**
@@ -730,6 +761,7 @@ public class FileAttributes implements Serializable, Cloneable {
                 .add("cacheClass", _cacheClass)
                 .add("hsm", _hsm)
                 .add("xattr", _xattr)
+                .add("labels", _labels)
                 .omitNullValues()
                 .toString();
     }
