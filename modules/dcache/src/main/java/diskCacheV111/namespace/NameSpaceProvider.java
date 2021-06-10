@@ -14,6 +14,7 @@ import diskCacheV111.util.CacheException;
 import diskCacheV111.util.FileNotFoundCacheException;
 import diskCacheV111.util.FsPath;
 import diskCacheV111.util.NoAttributeCacheException;
+import diskCacheV111.util.NoLabelCacheException;
 import diskCacheV111.util.PermissionDeniedCacheException;
 import diskCacheV111.util.PnfsId;
 import diskCacheV111.util.RetentionPolicy;
@@ -417,6 +418,21 @@ public interface NameSpaceProvider
      * @throws CacheException a generic failure in removing the attribute.
      */
     void removeExtendedAttribute(Subject subject, FsPath path, String name)
+            throws CacheException;
+
+
+    /**
+     * Remove an  labels from a file.
+     * @param subject The user making the request.
+     * @param path The file from which the  labels is deleted.
+     * @param name The  labels to remove.
+     * @throws FileNotFoundCacheException if the path does not exist.
+     * @throws PermissionDeniedCacheException if the user is not allowed to
+     * remove the labels.
+     * @throws NoLabelCacheException if the labels does not exist.
+     * @throws CacheException a generic failure in removing the labels.
+     */
+    void removeLabels(Subject subject, FsPath path, String name)
             throws CacheException;
 
     /**

@@ -70,6 +70,7 @@ import diskCacheV111.vehicles.PnfsMapPathMessage;
 import diskCacheV111.vehicles.PnfsMessage;
 import diskCacheV111.vehicles.PnfsReadExtendedAttributesMessage;
 import diskCacheV111.vehicles.PnfsRemoveExtendedAttributesMessage;
+import diskCacheV111.vehicles.PnfsRemoveLabelsMessage;
 import diskCacheV111.vehicles.PnfsRenameMessage;
 import diskCacheV111.vehicles.PnfsWriteExtendedAttributesMessage;
 import diskCacheV111.vehicles.PoolFileFlushedMessage;
@@ -242,6 +243,8 @@ public class PnfsManagerV3
         _gauges.addGauge(PnfsReadExtendedAttributesMessage.class);
         _gauges.addGauge(PnfsWriteExtendedAttributesMessage.class);
         _gauges.addGauge(PnfsRemoveExtendedAttributesMessage.class);
+        _gauges.addGauge(PnfsRemoveLabelsMessage.class);
+
     }
 
     public PnfsManagerV3()
@@ -2098,6 +2101,8 @@ public class PnfsManagerV3
             writeExtendedAttributes((PnfsWriteExtendedAttributesMessage) pnfsMessage);
         } else if (pnfsMessage instanceof PnfsRemoveExtendedAttributesMessage) {
             removeExtendedAttributes((PnfsRemoveExtendedAttributesMessage) pnfsMessage);
+        } else if (pnfsMessage instanceof PnfsRemoveLabelsMessage) {
+            removeLabels((PnfsRemoveLabelsMessage) pnfsMessage);
         } else {
             _log.warn("Unexpected message class [{}] from source [{}]",
                       pnfsMessage.getClass(), message.getSourcePath());
@@ -2482,6 +2487,33 @@ public class PnfsManagerV3
 
             for (String name : message.getAllNames()) {
                 _nameSpaceProvider.removeExtendedAttribute(message.getSubject(),
+                        path, name);
+            }
+
+            message.clearNames();
+            message.setSucceeded();
+        } catch (CacheException e) {
+            message.clearNames();
+            message.setFailed(e.getRc(), e);
+        }
+    }
+
+
+    private void removeLabels(PnfsRemoveLabelsMessage message)
+    {
+        try {
+            if (message.getFsPath() == null) {
+                throw new CacheException("PNFS-ID based label removal is not supported");
+            }
+
+            populatePnfsId(message);
+            checkMask(message);
+            checkRestriction(message, UPDATE_METADATA);
+
+            FsPath path = message.getFsPath();
+
+            for (String name : message.getAllNames()) {
+                _nameSpaceProvider.removeLabels(message.getSubject(),
                         path, name);
             }
 

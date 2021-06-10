@@ -1,6 +1,7 @@
 package diskCacheV111.util ;
 
 import com.google.common.util.concurrent.ListenableFuture;
+import diskCacheV111.vehicles.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,22 +17,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import diskCacheV111.namespace.NameSpaceProvider.Link;
-import diskCacheV111.vehicles.PnfsAddCacheLocationMessage;
-import diskCacheV111.vehicles.PnfsClearCacheLocationMessage;
-import diskCacheV111.vehicles.PnfsCreateEntryMessage;
-import diskCacheV111.vehicles.PnfsDeleteEntryMessage;
-import diskCacheV111.vehicles.PnfsFlagMessage;
-import diskCacheV111.vehicles.PnfsGetCacheLocationsMessage;
-import diskCacheV111.vehicles.PnfsGetParentMessage;
-import diskCacheV111.vehicles.PnfsListExtendedAttributesMessage;
-import diskCacheV111.vehicles.PnfsMapPathMessage;
-import diskCacheV111.vehicles.PnfsMessage;
-import diskCacheV111.vehicles.PnfsReadExtendedAttributesMessage;
-import diskCacheV111.vehicles.PnfsRemoveExtendedAttributesMessage;
-import diskCacheV111.vehicles.PnfsRenameMessage;
-import diskCacheV111.vehicles.PnfsWriteExtendedAttributesMessage;
 import diskCacheV111.vehicles.PnfsWriteExtendedAttributesMessage.Mode;
-import diskCacheV111.vehicles.PoolFileFlushedMessage;
 
 import dmg.cells.nucleus.CellEndpoint;
 import dmg.cells.nucleus.CellMessageSender;
@@ -48,6 +34,7 @@ import org.dcache.vehicles.FileAttributes;
 import org.dcache.vehicles.PnfsCreateSymLinkMessage;
 import org.dcache.vehicles.PnfsGetFileAttributes;
 import org.dcache.vehicles.PnfsRemoveChecksumMessage;
+import diskCacheV111.vehicles.PnfsRemoveLabelsMessage;
 import org.dcache.vehicles.PnfsSetFileAttributes;
 
 import static com.google.common.base.Preconditions.checkState;
@@ -723,6 +710,46 @@ public class PnfsHandler implements CellMessageSender
         xattrs.forEach(message::putValue);
         request(message);
     }
+
+    /**
+     * Remove a label attribute from a file.
+     * @param path The file from which the label  is deleted.
+     * @param name The name of the label to remove.
+     * @throws FileNotFoundCacheException if the path does not exist.
+     * @throws PermissionDeniedCacheException if the user is not allowed to
+     * remove the label.
+     * @throws NoLabelCacheException if the attribute does not exist.
+     * @throws CacheException a generic failure in removing the label.
+     */
+    public void removeLabels(FsPath path, String name)
+            throws CacheException
+    {
+        PnfsRemoveLabelsMessage message =
+                new PnfsRemoveLabelsMessage(path.toString());
+        message.addName(name);
+        request(message);
+    }
+
+    /**
+     * Remove extended labels from a file.
+     * @param path The file from which the  labels is deleted.
+     * @param names The names of the  labels to remove.
+     * @throws FileNotFoundCacheException if the path does not exist.
+     * @throws PermissionDeniedCacheException if the user is not allowed to
+     * remove the labels.
+     * @throws NoLabelCacheException if the attribute does not exist.
+     * @throws CacheException a generic failure in removing the labels.
+     */
+    public void removeLabels(FsPath path, Collection<String> names)
+            throws CacheException
+    {
+        PnfsRemoveLabelsMessage message =
+                new PnfsRemoveLabelsMessage(path.toString());
+        names.forEach(message::addName);
+        request(message);
+    }
+
+
 
     /**
      * Remove an extended attribute from a file.

@@ -235,4 +235,11 @@ public abstract class ForwardingNameSpaceProvider implements NameSpaceProvider
         delegate().updateFsStat();
     }
 
+    @Override
+    public void removeLabels(Subject subject, FsPath path, String name)
+            throws CacheException
+    {
+        delegate().removeLabels(subject, path, name);
+    }
+
 }

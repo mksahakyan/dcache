@@ -1,6 +1,7 @@
 package org.dcache.restful.resources.namespace;
 
 import com.google.common.collect.Range;
+import diskCacheV111.util.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -49,13 +50,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import diskCacheV111.util.AttributeExistsCacheException;
-import diskCacheV111.util.CacheException;
-import diskCacheV111.util.FileNotFoundCacheException;
-import diskCacheV111.util.FsPath;
-import diskCacheV111.util.NoAttributeCacheException;
-import diskCacheV111.util.PermissionDeniedCacheException;
-import diskCacheV111.util.PnfsHandler;
 import diskCacheV111.vehicles.PnfsWriteExtendedAttributesMessage;
 import diskCacheV111.vehicles.PnfsWriteExtendedAttributesMessage.Mode;
 
@@ -313,6 +307,13 @@ public class FileResources {
                                              + "'labels' item value is a JSON "
                                              + "Array with the new labels,"
                                              + "\n"
+                                             + "If action is 'rm-labels' then "
+                                             + "labels of a file "
+                                             + "are removed as "
+                                             + "given by the 'label' item.  The "
+                                             + "'label' value is either a "
+                                             + "string or an array of strings."
+                                             + "\n"
                                              + "If action is 'chgrp' then the "
                                              + "command requests the change of "
                                              + "group-owner of the target file "
@@ -369,6 +370,14 @@ public class FileResources {
                                                      + "        \"label-1\", \"label-2\"\n"
                                                      + "    ]\n"
                                                      + "}"),
+                                             @ExampleProperty(mediaType = "RM-LABEL",
+                                                         value = "{\n"
+                                                                 + "    \"action\" : \"rm-label\",\n"
+                                                                 + "    \"labels\" : [\n"
+                                                                 + "        \"label-1\",\n"
+                                                                 + "        \"label-2\"\n"
+                                                                 + "    ]\n"
+                                                                 + "}"),
                                              @ExampleProperty(mediaType = "CHGRP",
                                                      value = "{\n"
                                                          + "    \"action\" : \"chgrp\",\n"
@@ -438,10 +447,25 @@ public class FileResources {
                case "set-label":
                     JSONArray labelObjects = reqPayload.getJSONArray("labels");
                     for (int i = 0; i < labelObjects.length(); i++) {
-                        String label = labelObjects.getString(i);
                         pnfsHandler.setFileAttributes(path,FileAttributes.ofLabel(labelObjects.getString(i))) ;
                         }
                break;
+
+                case "rm-label":
+                    Object labelsArgument = reqPayload.get("labels");
+                    if (labelsArgument instanceof String) {
+                        pnfsHandler.removeLabels(path, (String)labelsArgument);
+                    } else if (labelsArgument instanceof JSONArray) {
+                        JSONArray namesArray = (JSONArray)labelsArgument;
+                        List<String> names = new ArrayList<>(namesArray.length());
+                        for (int i = 0; i < namesArray.length(); i++) {
+                            names.add(namesArray.getString(i));
+                        }
+                        pnfsHandler.removeLabels(path, names);
+                    } else {
+                        throw new JSONException("\"labels\" is not a String or an array");
+                    }
+                    break;
                 case "chgrp":
                     int gid = reqPayload.getInt("gid");
                     pnfsHandler.setFileAttributes(path, FileAttributes.ofGid(gid));
@@ -465,7 +489,11 @@ public class FileResources {
         } catch (NoAttributeCacheException e) {
             throw new WebApplicationException(Response.status(409, "No such attribute")
                     .build());
-        } catch (UnsupportedOperationException |
+        } catch (NoLabelCacheException e) {
+            throw new WebApplicationException(Response.status(409, "No such label")
+                    .build());
+        }
+        catch (UnsupportedOperationException |
                         URISyntaxException |
                         JSONException |
                         CacheException |

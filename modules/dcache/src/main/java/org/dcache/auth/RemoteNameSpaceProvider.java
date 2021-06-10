@@ -26,6 +26,7 @@ import diskCacheV111.vehicles.PnfsFlagMessage;
 import diskCacheV111.vehicles.PnfsListExtendedAttributesMessage;
 import diskCacheV111.vehicles.PnfsReadExtendedAttributesMessage;
 import diskCacheV111.vehicles.PnfsRemoveExtendedAttributesMessage;
+import diskCacheV111.vehicles.PnfsRemoveLabelsMessage;
 import diskCacheV111.vehicles.PnfsWriteExtendedAttributesMessage;
 
 import org.dcache.auth.attributes.Restrictions;
@@ -310,6 +311,17 @@ public class RemoteNameSpaceProvider implements NameSpaceProvider
     {
         PnfsRemoveExtendedAttributesMessage message =
                 new PnfsRemoveExtendedAttributesMessage(path.toString());
+        message.addName(name);
+        message.setSubject(subject);
+        message.setRestriction(Restrictions.none());
+        _pnfs.request(message);
+    }
+
+    public void removeLabels(Subject subject, FsPath path, String name)
+            throws CacheException
+    {
+        PnfsRemoveLabelsMessage message =
+                new PnfsRemoveLabelsMessage(path.toString());
         message.addName(name);
         message.setSubject(subject);
         message.setRestriction(Restrictions.none());

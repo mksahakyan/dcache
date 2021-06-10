@@ -7,6 +7,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Range;
 import com.google.common.collect.Sets;
 import com.google.common.primitives.Ints;
+import diskCacheV111.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -38,22 +39,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import diskCacheV111.namespace.NameSpaceProvider;
-import diskCacheV111.util.AccessLatency;
-import diskCacheV111.util.AttributeExistsCacheException;
-import diskCacheV111.util.CacheException;
-import diskCacheV111.util.FileCorruptedCacheException;
-import diskCacheV111.util.FileExistsCacheException;
-import diskCacheV111.util.FileIsNewCacheException;
-import diskCacheV111.util.FileNotFoundCacheException;
-import diskCacheV111.util.FsPath;
-import diskCacheV111.util.InvalidMessageCacheException;
-import diskCacheV111.util.LockedCacheException;
-import diskCacheV111.util.NoAttributeCacheException;
-import diskCacheV111.util.NotDirCacheException;
-import diskCacheV111.util.NotFileCacheException;
-import diskCacheV111.util.PermissionDeniedCacheException;
-import diskCacheV111.util.PnfsId;
-import diskCacheV111.util.RetentionPolicy;
 import diskCacheV111.vehicles.StorageInfo;
 
 import dmg.cells.nucleus.CellInfo;
@@ -1007,7 +992,7 @@ public class ChimeraNameSpaceProvider
                 }
                 attributes.setXattrs(xattrs);
                 break;
-                //test
+                
                 case LABELS:
                     Set<String> labels = _fs.getLabels(inode);
                     for (String labelName : labels) {
@@ -1792,6 +1777,38 @@ public class ChimeraNameSpaceProvider
             throw new FileNotFoundCacheException("No such file " + path);
         } catch (NoXdataChimeraException e) {
             throw new NoAttributeCacheException("No attribute " + name + " for file " + path,
+                    e);
+        } catch (ChimeraFsException e) {
+            throw new CacheException("Failed to list extended attributes: "
+                    + Exceptions.messageOrClassName(e), e);
+        }
+    }
+
+
+    public void removeLabels(Subject subject, FsPath path, String name)
+            throws CacheException
+    {
+        try {
+            ExtendedInode target = pathToInode(subject, path.toString());
+
+            if (!Subjects.isRoot(subject)) {
+                FileAttributes attributes = getFileAttributesForPermissionHandler(target);
+                if (target.isDirectory()) {
+
+                        throw new NotFileCacheException("It is not possible to add label to a directory");
+
+                } else {
+                    if (_permissionHandler.canWriteFile(subject, attributes) != ACCESS_ALLOWED) {
+                        throw new PermissionDeniedCacheException("Access denied");
+                    }
+                }
+            }
+
+            _fs.removeLabel(target, name);
+        } catch (FileNotFoundChimeraFsException e) {
+            throw new FileNotFoundCacheException("No such file " + path);
+        } catch (NoLabelCacheException e) {
+            throw new NoLabelCacheException("No label " + name + " for file " + path,
                     e);
         } catch (ChimeraFsException e) {
             throw new CacheException("Failed to list extended attributes: "
