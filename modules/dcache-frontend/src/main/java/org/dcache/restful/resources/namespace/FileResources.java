@@ -428,7 +428,7 @@ public class FileResources {
                     pnfsHandler.setFileAttributes(path, FileAttributes.ofMode(mode));
                     break;
                 default:
-                    throw new UnsupportedOperationException("No such action " + action);
+                    throw new UnsupportedOperationException("No such action Y " + action);
             }
         } catch (FileNotFoundCacheException e) {
             throw new NotFoundException(e);
