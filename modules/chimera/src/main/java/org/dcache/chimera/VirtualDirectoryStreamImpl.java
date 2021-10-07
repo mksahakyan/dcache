@@ -31,9 +31,9 @@ public class VirtualDirectoryStreamImpl {
 
     private static final String QUERY =
 
+
           "SELECT i.*, d.iname || '-' || d.iparent  as filename, i.inumber as fileid  FROM t_inodes i JOIN t_dirs d ON  i.inumber = d.ichild WHERE d.ichild IN"
                 +
-
                 "(SELECT   ichild  FROM t_dirs," +
                 " ( SELECT label_id FROM t_labels  WHERE labelname= ?) as nested " +
 

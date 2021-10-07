@@ -24,6 +24,11 @@ public class PnfsListDirectoryMessage extends PnfsMessage {
 
     private static final long serialVersionUID = -5774904472984157638L;
 
+    public enum PathType
+    {
+        PATH, LABEL
+    }
+
     private final Glob _pattern;
     private final Integer _lower;
     private final Integer _upper;
@@ -38,6 +43,10 @@ public class PnfsListDirectoryMessage extends PnfsMessage {
      */
     private boolean _isFinal;
     private int _messageCount;
+
+    public static  PathType _pathType= PathType.PATH;
+
+
 
     /**
      * Constructs a new message.
