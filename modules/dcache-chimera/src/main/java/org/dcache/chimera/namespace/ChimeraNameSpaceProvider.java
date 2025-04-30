@@ -1391,6 +1391,47 @@ public class ChimeraNameSpaceProvider
         }
     }
 
+
+    @Override
+    public void listLabels(Subject subject, String path, Range<Integer> range,
+                           Set<FileAttribute> attrs, ListHandler handler)
+            throws CacheException
+    {
+        try {
+            int counter = 0;
+            //TODO check permissions
+            try (DirectoryStreamB<ChimeraDirectoryEntry> dirStream = FsInode.getRoot(_fs)
+                    .listLabelsStream()) {
+                for (ChimeraDirectoryEntry entry : dirStream) {
+                    try {
+                        String name = entry.getName();
+                        if (!name.equals(".") && !name.equals("..") &&
+                                range.contains(counter++)) {
+                            // FIXME: actually, ChimeraDirectoryEntry
+                            // already contains most of attributes
+
+                            FileAttributes fa =
+                                    attrs.isEmpty()
+                                            ? null
+                                            : getFileAttributes(new ExtendedInode(_fs, entry.getInode()), attrs);
+                            handler.addEntry(name, fa);
+                        }
+                    } catch (FileNotFoundChimeraFsException e) {
+                        /* Not an error; files may be deleted during the
+                         * list operation.
+                         */
+                    }
+                }
+            }
+
+        } catch (FileNotFoundChimeraFsException e) {
+            throw new FileNotFoundCacheException("No such file or directory: " + path);
+        } catch (IOException e) {
+            LOGGER.error("Exception in list: {}", e.getMessage());
+            throw new CacheException(CacheException.UNEXPECTED_SYSTEM_EXCEPTION, e.getMessage());
+        }
+    }
+
     private ExtendedInode mkdir(Subject subject, ExtendedInode parent, String name, int uid,
           int gid, int mode)
           throws ChimeraFsException, CacheException {
