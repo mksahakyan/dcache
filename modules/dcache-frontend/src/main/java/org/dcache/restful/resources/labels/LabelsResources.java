@@ -68,7 +68,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 
-/**
+/** Marina
  * RestFul API to  provide files/folders manipulation operations.
  */
 @Api(value = "labels", authorizations = {@Authorization("basicAuth")})
